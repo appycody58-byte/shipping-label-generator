@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shipping Label Generator - Breaking Limits</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justify-content: center; padding: 40px; }
+    .label {
+      width: 400px;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      padding: 0;
+      overflow: hidden;
+    }
+    .top { display: flex; border-bottom: 2px solid #000; }
+    .from { flex: 1; padding: 12px; font-size: 13px; }
+    .from strong { display: block; margin-bottom: 4px; }
+    .shipper { width: 140px; padding: 12px; text-align: center; border-left: 1px solid #ccc; font-size: 11px; }
+    .shipper img { max-width: 100px; }
+    .to-section { padding: 12px; border-bottom: 1px solid #000; display: flex; }
+    .to { flex: 1; font-size: 14px; }
+    .to strong { display: block; margin-bottom: 4px; }
+    .fl-box { width: 80px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; border: 2px solid #000; margin-right: 10px; }
+    .barcode-area { padding: 10px; text-align: center; }
+    .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 42px; letter-spacing: 2px; }
+    .tracking { font-size: 12px; margin-top: 4px; }
+    .bottom-barcode { padding: 15px; text-align: center; border-top: 1px solid #000; }
+    .big-barcode { font-family: 'Libre Barcode 39', monospace; font-size: 36px; }
+    @media print {
+      body { background: white; padding: 0; }
+      .label { box-shadow: none; border: none; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="label">
+    <div class="top">
+      <div class="from">
+        <strong>FROM:</strong>
+        REEVES MUSKY<br>
+        1945 Cedar Avenue<br>
+        Austin, Texas 78701
+      </div>
+      <div class="shipper">
+        <strong>SHIPPER:</strong><br>
+        <div style="font-weight:bold; font-size:16px; color:#0066cc; margin:8px 0;">SHIPPER<br>GLOBAL EXPRESS</div>
+      </div>
+    </div>
+
+    <div class="to-section">
+      <div class="to">
+        <strong>TO:</strong>
+        Anita Vincent<br>
+        4817 Friendly St.<br>
+        Pace, Florida 32571
+      </div>
+      <div class="fl-box">FL</div>
+      <div style="text-align:center; font-size:11px;">
+        <div class="barcode">*402388927*</div>
+        <div>11861-87236-<br>402392053</div>
+      </div>
+    </div>
+
+    <div class="bottom-barcode">
+      <div class="big-barcode">*11861-87236-402392053*</div>
+      <div class="tracking">11861-87236-402392053</div>
+    </div>
+  </div>
+
+  <script>
+    // Live edit mode - click any text to change it
+    document.querySelectorAll('.from, .to, .shipper').forEach(el => {
+      el.contentEditable = true;
+      el.style.outline = '1px dashed transparent';
+      el.onfocus = () => el.style.outline = '1px dashed #0066cc';
+      el.onblur = () => el.style.outline = '1px dashed transparent';
+    });
+  </script>
+</body>
+</html>
