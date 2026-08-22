@@ -80,7 +80,6 @@
       cursor: pointer;
     }
 
-    /* ===== EXACT PROFESSIONAL TIMELINE ===== */
     .tracking-card {
       background: #fff;
       border-radius: 16px;
@@ -202,7 +201,6 @@
       text-underline-offset: 2px;
     }
 
-    /* Label section - different design */
     .label-section { margin-top: 28px; }
     .section-title {
       font-size: 12px;
@@ -297,25 +295,23 @@
     <div class="track-input-wrap">
       <label>ENTER TRACKING NUMBER</label>
       <div class="track-row">
-        <input type="text" id="trackingInput" placeholder="Paste or type tracking number" value="11861-87236-402392053">
+        <input type="text" id="trackingInput" placeholder="Paste or type tracking number" value="11881-87236-402382053">
         <button class="btn-go" onclick="doTrack()">Track</button>
       </div>
     </div>
 
-    <!-- PROFESSIONAL IN-TRANSIT TIMELINE -->
     <div class="tracking-card" id="trackingCard">
       <div class="eta" id="etaText">By end of day</div>
       <div class="timeline" id="timeline"></div>
     </div>
 
-    <!-- LABEL (different design) -->
     <div class="label-section" id="labelSection">
       <div class="section-title">Shipping Label</div>
       <div class="label-card">
         <div class="label-header">
           <div class="label-from" contenteditable="true">
             <strong>FROM</strong>
-            REEVES MUSKY<br>
+            Reeve Musk<br>
             1945 Cedar Avenue<br>
             Austin, Texas 78701
           </div>
@@ -328,17 +324,17 @@
           <div class="label-to-text" contenteditable="true">
             <strong>TO</strong>
             Anita Vincent<br>
-            4817 Friendly St.<br>
-            Pace, Florida 32571
+            @4817 Friendly St<br>
+            Apt 38
           </div>
           <div class="fl">FL</div>
         </div>
         <div class="label-barcode">
           <svg id="barcode"></svg>
-          <div class="label-track-num" id="labelTrack">11861-87236-402392053</div>
+          <div class="label-track-num" id="labelTrack">11881-87236-402382053</div>
         </div>
       </div>
-      <div class="hint">Edit addresses • Enter any tracking number above and hit Track</div>
+      <div class="hint">Exact label from your photo • Enter tracking number and hit Track</div>
     </div>
   </div>
 
@@ -363,16 +359,16 @@
     }
 
     function doTrack() {
-      const num = input.value.trim() || '11861-87236-402392053';
+      const num = input.value.trim() || '11881-87236-402382053';
       renderBarcode(num);
 
-      // Always show the exact professional In-Transit view from your screenshot
       etaText.textContent = 'By end of day';
 
+      // Use the real addresses from the latest label photo
       const steps = [
         {
-          title: 'FROM: PEGGY PALMER',
-          sub: '1201 THOMAS BLVD<br>TENNESSEE US',
+          title: 'FROM: Reeve Musk',
+          sub: '1945 Cedar Avenue<br>Austin, Texas 78701',
           time: 'Label Created<br>8/19/26 9:00 AM',
           state: 'done'
         },
@@ -396,8 +392,8 @@
           link: true
         },
         {
-          title: 'TO: PEGGY PALMER',
-          sub: '1201 THOMAS BLVD<br>TENNESSEE US',
+          title: 'TO: Anita Vincent',
+          sub: '@4817 Friendly St<br>Apt 38',
           time: 'By end of day [e.g., 8/20/26]',
           state: ''
         }
@@ -416,7 +412,6 @@
       });
       timeline.innerHTML = html;
 
-      // Animate purple progress bar to current step
       setTimeout(() => {
         const current = timeline.querySelector('.step.current');
         const bar = document.getElementById('progressBar');
