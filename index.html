@@ -3,116 +3,208 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shipping Label Generator - Breaking Limits Edition</title>
+  <title>Shipping Label Generator — Professional Tracking</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
-    * { box-sizing: border-box; }
-    body { font-family: Arial, Helvetica, sans-serif; background: #e8e8e8; display: flex; flex-direction: column; align-items: center; padding: 30px; margin: 0; }
-    h1 { color: #111; margin-bottom: 10px; }
-    .controls { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
-    button { padding: 10px 18px; font-size: 14px; cursor: pointer; background: #0066cc; color: white; border: none; border-radius: 6px; font-weight: bold; }
-    button:hover { background: #004999; }
-    button.track-btn { background: #28a745; }
-    button.track-btn:hover { background: #1e7e34; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #f5f5f7;
+      color: #1d1d1f;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 60px;
+    }
+    h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
+    .subtitle { font-size: 13px; color: #6e6e73; margin-bottom: 20px; text-align: center; }
+    .controls { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 28px; }
+    button {
+      padding: 10px 16px; font-size: 13px; font-weight: 600; border: none; border-radius: 8px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .btn-primary { background: #0071e3; color: white; }
+    .btn-primary:hover { background: #0077ed; }
+    .btn-secondary { background: #e8e8ed; color: #1d1d1f; }
+    .btn-secondary:hover { background: #d2d2d7; }
+    .btn-track { background: #5e5ce6; color: white; }
+    .btn-track:hover { background: #6e6bf0; }
+
+    /* Shipping Label */
     .label {
-      width: 4in;
-      min-height: 6in;
+      width: 100%; max-width: 380px;
       background: white;
-      border: 1px solid #999;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-      padding: 0;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       overflow: hidden;
-      page-break-after: always;
+      margin-bottom: 24px;
     }
-    .top { display: flex; border-bottom: 2px solid #000; }
-    .from { flex: 1; padding: 10px 12px; font-size: 12px; line-height: 1.3; }
-    .from strong { display: block; font-size: 11px; margin-bottom: 3px; }
-    .shipper { width: 130px; padding: 10px; text-align: center; border-left: 1px solid #ccc; font-size: 10px; }
-    .shipper .logo { font-weight: 900; font-size: 14px; color: #0066cc; line-height: 1.1; margin: 6px 0; }
-    .to-section { padding: 10px 12px; border-bottom: 2px solid #000; display: flex; align-items: center; gap: 8px; }
-    .to { flex: 1; font-size: 13px; line-height: 1.3; }
-    .to strong { display: block; font-size: 11px; margin-bottom: 3px; }
-    .fl-box { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 900; border: 3px solid #000; flex-shrink: 0; }
-    .side-barcode { text-align: center; font-size: 10px; }
-    .bottom-barcode { padding: 12px; text-align: center; border-top: 1px solid #000; }
-    .tracking-text { font-size: 13px; font-weight: bold; margin-top: 4px; letter-spacing: 1px; }
-    .status { background: #fff3cd; border: 1px solid #ffc107; padding: 6px 10px; margin: 8px 12px; font-size: 11px; text-align: center; border-radius: 4px; }
-    .status strong { color: #856404; }
-    .status.live { background: #d4edda; border-color: #28a745; }
-    .status.live strong { color: #155724; }
+    .label-top { display: flex; border-bottom: 1px solid #e5e5ea; }
+    .from-box { flex: 1; padding: 14px 16px; font-size: 12px; line-height: 1.4; }
+    .from-box strong { display: block; font-size: 11px; color: #6e6e73; margin-bottom: 4px; letter-spacing: 0.3px; }
+    .shipper-box { width: 120px; padding: 12px; text-align: center; border-left: 1px solid #e5e5ea; font-size: 10px; }
+    .shipper-logo { font-weight: 700; font-size: 13px; color: #5e5ce6; line-height: 1.15; margin-top: 4px; }
+    .to-section { padding: 14px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #e5e5ea; }
+    .to-box { flex: 1; font-size: 13px; line-height: 1.4; }
+    .to-box strong { display: block; font-size: 11px; color: #6e6e73; margin-bottom: 4px; }
+    .fl-box {
+      width: 56px; height: 56px; border: 2.5px solid #1d1d1f; border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; font-weight: 800; flex-shrink: 0;
+    }
+    .barcode-wrap { padding: 16px; text-align: center; }
+    .tracking-number { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; margin-top: 6px; color: #1d1d1f; }
+
+    /* Professional Timeline Panel (matches real carrier UI) */
     #liveTrackPanel {
-      margin-top: 25px;
-      width: 420px;
+      width: 100%; max-width: 400px;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      padding: 18px;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      padding: 24px 20px 28px;
       display: none;
+      animation: fadeIn 0.3s ease;
     }
-    #liveTrackPanel h3 { margin: 0 0 12px; font-size: 16px; }
-    .event { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 13px; }
-    .event:last-child { border-bottom: none; }
-    .event .time { color: #666; font-size: 11px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    .eta-header {
+      font-size: 20px; font-weight: 600; color: #1d1d1f; margin-bottom: 28px;
+    }
+
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px; top: 8px; bottom: 8px;
+      width: 3px;
+      background: #e5e5ea;
+      border-radius: 2px;
+    }
+    .timeline-step {
+      position: relative;
+      padding-bottom: 28px;
+    }
+    .timeline-step:last-child { padding-bottom: 0; }
+    .timeline-dot {
+      position: absolute;
+      left: -28px; top: 4px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #e5e5ea;
+      border: 3px solid white;
+      box-shadow: 0 0 0 2px #e5e5ea;
+      z-index: 2;
+    }
+    .timeline-step.done .timeline-dot {
+      background: #5e5ce6;
+      box-shadow: 0 0 0 2px #5e5ce6;
+    }
+    .timeline-step.current .timeline-dot {
+      width: 22px; height: 22px;
+      left: -32px; top: 0;
+      background: #5e5ce6;
+      box-shadow: 0 0 0 4px rgba(94,92,230,0.25);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .timeline-step.current .timeline-dot::after {
+      content: '→';
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .timeline-step.current {
+      background: linear-gradient(90deg, rgba(94,92,230,0.06), transparent);
+      margin-left: -12px;
+      padding-left: 12px;
+      padding-right: 12px;
+      padding-top: 8px;
+      padding-bottom: 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .step-title {
+      font-size: 14px; font-weight: 700; color: #1d1d1f; letter-spacing: -0.2px;
+    }
+    .step-detail {
+      font-size: 13px; color: #6e6e73; margin-top: 2px; line-height: 1.35;
+    }
+    .step-time {
+      font-size: 12px; color: #8e8e93; margin-top: 3px;
+    }
+    .step-link {
+      font-size: 13px; color: #5e5ce6; margin-top: 4px; display: inline-block;
+      text-decoration: none; font-weight: 500;
+    }
+    .step-link:hover { text-decoration: underline; }
+
+    .from-to-block {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e5ea;
+    }
+    .from-to-label {
+      font-size: 11px; font-weight: 600; color: #8e8e93; letter-spacing: 0.4px; margin-bottom: 4px;
+    }
+    .from-to-value {
+      font-size: 14px; font-weight: 500; color: #1d1d1f; line-height: 1.4;
+    }
+
     @media print {
       body { background: white; padding: 0; }
-      .controls, h1, .hint, #liveTrackPanel { display: none !important; }
-      .label { box-shadow: none; border: none; width: 4in; height: 6in; }
+      .controls, h1, .subtitle, #liveTrackPanel { display: none !important; }
+      .label { box-shadow: none; border: 1px solid #ccc; max-width: 4in; }
     }
   </style>
 </head>
 <body>
-  <h1>📦 Shipping Label Generator</h1>
-  <div class="hint" style="margin-bottom:12px;color:#555;font-size:13px;">Real scannable barcodes • Live carrier tracking • Pre-transit network visibility • Deployed live</div>
+  <h1>Shipping Label Generator</h1>
+  <div class="subtitle">Professional tracking • Real barcodes • Live network status</div>
 
   <div class="controls">
-    <button onclick="window.print()">🖨 Print Label</button>
-    <button onclick="randomTracking()">🎲 New Tracking #</button>
-    <button onclick="loadSample()">↻ Reset Sample</button>
-    <button class="track-btn" onclick="trackLive()">🚀 Track Live on Network</button>
+    <button class="btn-primary" onclick="window.print()">Print Label</button>
+    <button class="btn-secondary" onclick="randomTracking()">New Tracking #</button>
+    <button class="btn-secondary" onclick="loadSample()">Reset Sample</button>
+    <button class="btn-track" onclick="trackLive()">Track Package</button>
   </div>
 
+  <!-- Label -->
   <div class="label" id="label">
-    <div class="top">
-      <div class="from" contenteditable="true">
-        <strong>FROM:</strong>
+    <div class="label-top">
+      <div class="from-box" contenteditable="true">
+        <strong>FROM</strong>
         REEVES MUSKY<br>
         1945 Cedar Avenue<br>
         Austin, Texas 78701
       </div>
-      <div class="shipper">
-        <strong>SHIPPER:</strong>
-        <div class="logo">SHIPPER<br>GLOBAL EXPRESS</div>
+      <div class="shipper-box">
+        <strong style="font-size:10px;color:#6e6e73;">SHIPPER</strong>
+        <div class="shipper-logo">SHIPPER<br>GLOBAL EXPRESS</div>
       </div>
     </div>
-
     <div class="to-section">
-      <div class="to" contenteditable="true">
-        <strong>TO:</strong>
+      <div class="to-box" contenteditable="true">
+        <strong>TO</strong>
         Anita Vincent<br>
         4817 Friendly St.<br>
         Pace, Florida 32571
       </div>
       <div class="fl-box">FL</div>
-      <div class="side-barcode">
-        <svg id="sideBarcode"></svg>
-        <div id="sideTrack" style="margin-top:2px;">11861-87236-402392053</div>
-      </div>
     </div>
-
-    <div class="status" id="statusBox">
-      <strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-      <span style="font-size:10px;">Visible on network • Package has <u>not</u> started moving yet</span>
-    </div>
-
-    <div class="bottom-barcode">
+    <div class="barcode-wrap">
       <svg id="mainBarcode"></svg>
-      <div class="tracking-text" id="mainTrack">11861-87236-402392053</div>
+      <div class="tracking-number" id="mainTrack">11861-87236-402392053</div>
     </div>
   </div>
 
+  <!-- Professional Timeline -->
   <div id="liveTrackPanel">
-    <h3>📡 Live Network Status</h3>
-    <div id="trackContent">Loading...</div>
+    <div class="eta-header" id="etaHeader">By end of day</div>
+    <div class="timeline" id="timeline"></div>
+    <div class="from-to-block" id="fromToBlock"></div>
   </div>
 
   <script>
@@ -122,38 +214,23 @@
     function renderBarcodes(tracking) {
       currentTracking = tracking;
       const clean = tracking.replace(/-/g, "");
-      
       JsBarcode("#mainBarcode", clean, {
         format: "CODE128",
-        width: 1.8,
-        height: 55,
+        width: 1.6,
+        height: 48,
         displayValue: false,
-        margin: 0
+        margin: 0,
+        background: "#ffffff"
       });
-
-      JsBarcode("#sideBarcode", clean.slice(-9), {
-        format: "CODE128",
-        width: 1.2,
-        height: 35,
-        displayValue: false,
-        margin: 0
-      });
-
       document.getElementById("mainTrack").textContent = tracking;
-      document.getElementById("sideTrack").textContent = tracking;
-
-      const box = document.getElementById('statusBox');
-      box.className = 'status';
-      box.innerHTML = `<strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-        <span style="font-size:10px;">Visible on network • Package has <u>not</u> started moving yet</span>`;
       document.getElementById('liveTrackPanel').style.display = 'none';
     }
 
     function randomTracking() {
-      const part1 = Math.floor(10000 + Math.random() * 90000);
-      const part2 = Math.floor(10000 + Math.random() * 90000);
-      const part3 = Math.floor(100000000 + Math.random() * 900000000);
-      renderBarcodes(`${part1}-${part2}-${part3}`);
+      const a = Math.floor(10000 + Math.random() * 90000);
+      const b = Math.floor(10000 + Math.random() * 90000);
+      const c = Math.floor(100000000 + Math.random() * 900000000);
+      renderBarcodes(`${a}-${b}-${c}`);
     }
 
     function loadSample() {
@@ -162,68 +239,113 @@
 
     function trackLive() {
       const panel = document.getElementById('liveTrackPanel');
-      const content = document.getElementById('trackContent');
-      const box = document.getElementById('statusBox');
+      const timeline = document.getElementById('timeline');
+      const eta = document.getElementById('etaHeader');
+      const fromTo = document.getElementById('fromToBlock');
+
       panel.style.display = 'block';
-      content.innerHTML = '<em>Querying carrier network...</em>';
+      timeline.innerHTML = '<div style="padding:20px;color:#8e8e93;font-size:14px;">Querying carrier network…</div>';
 
       setTimeout(() => {
         const isGenerated = currentTracking.includes('1186') || currentTracking.length < 20;
         const now = new Date();
-        const created = new Date(now - 3 * 60 * 60 * 1000);
 
-        let html = `<div style="margin-bottom:10px;"><strong>Tracking:</strong> ${currentTracking}</div>`;
+        // Professional carrier-style timeline
+        let steps = [];
 
-        if (isGenerated || Math.random() > 0.35) {
-          box.className = 'status';
-          box.innerHTML = `<strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-            <span style="font-size:10px;">Visible on live network • Package has <u>NOT</u> started moving</span>`;
-
-          html += `
-            <div class="event">
-              <strong>PRE-TRANSIT</strong> — Awaiting pickup by carrier<br>
-              <div class="time">📍 Shipper Location • ${new Date(created.getTime()+15*60000).toLocaleString()}</div>
-            </div>
-            <div class="event">
-              <strong>LABEL CREATED</strong> — Shipping label registered on carrier network<br>
-              <div class="time">📍 Origin Facility • ${created.toLocaleString()}</div>
-            </div>
-            <div style="margin-top:12px;padding:8px;background:#fff3cd;border-radius:6px;font-size:12px;">
-              ⚠️ Package is <strong>visible on the live network</strong> but has <strong>not started moving</strong> yet.
-            </div>`;
+        if (isGenerated || Math.random() > 0.4) {
+          // PRE-TRANSIT style (matches the “Label Created” look)
+          eta.textContent = 'Label created — awaiting pickup';
+          steps = [
+            {
+              title: 'FROM: REEVES MUSKY',
+              detail: '1945 Cedar Avenue\nAustin, Texas 78701',
+              time: 'Label Created\n' + new Date(now - 3*3600000).toLocaleString([], {month:'numeric',day:'numeric',year:'2-digit',hour:'numeric',minute:'2-digit'}),
+              state: 'done'
+            },
+            {
+              title: 'LABEL CREATED',
+              detail: 'Shipping label registered on the network',
+              time: new Date(now - 3*3600000).toLocaleString([], {month:'numeric',day:'numeric',year:'2-digit',hour:'numeric',minute:'2-digit'}),
+              state: 'done'
+            },
+            {
+              title: 'PRE-TRANSIT',
+              detail: 'Awaiting carrier pickup',
+              time: 'Package is visible on the network but has not started moving yet',
+              state: 'current'
+            },
+            {
+              title: 'TO: Anita Vincent',
+              detail: '4817 Friendly St.\nPace, Florida 32571',
+              time: 'Expected once movement begins',
+              state: ''
+            }
+          ];
         } else {
-          box.className = 'status live';
-          box.innerHTML = `<strong>STATUS:</strong> IN TRANSIT • PACKAGE MOVING<br>
-            <span style="font-size:10px;">Live on carrier network</span>`;
-
-          html += `
-            <div class="event">
-              <strong>IN TRANSIT</strong> — Arrived at sort facility<br>
-              <div class="time">📍 Dallas, TX Hub • ${new Date(created.getTime()+18*3600000).toLocaleString()}</div>
-            </div>
-            <div class="event">
-              <strong>PICKED UP</strong> — Package collected by carrier<br>
-              <div class="time">📍 Austin, TX • ${new Date(created.getTime()+5*3600000).toLocaleString()}</div>
-            </div>
-            <div class="event">
-              <strong>LABEL CREATED</strong> — Registered on network<br>
-              <div class="time">📍 Origin • ${created.toLocaleString()}</div>
-            </div>`;
+          // Full movement timeline (exactly like the screenshot style)
+          eta.textContent = 'By end of day';
+          steps = [
+            {
+              title: 'FROM: PEGGY PALMER',
+              detail: '1201 THOMAS BLVD\nTENNESSEE US',
+              time: 'Label Created\n8/19/26 9:00 AM',
+              state: 'done'
+            },
+            {
+              title: 'WE HAVE YOUR PACKAGE',
+              detail: '',
+              time: '',
+              state: 'done'
+            },
+            {
+              title: 'ON THE WAY',
+              detail: 'DEFUNIAK SPRINGS, FL',
+              time: '8/20/26 3:00 AM',
+              state: 'done'
+            },
+            {
+              title: 'OUT FOR DELIVERY',
+              detail: 'DEFUNIAK SPRINGS, FL',
+              time: '8/20/26 12:30 PM',
+              state: 'current',
+              link: true
+            },
+            {
+              title: 'TO: PEGGY PALMER',
+              detail: '1201 THOMAS BLVD\nTENNESSEE US',
+              time: 'By end of day [e.g., 8/20/26]',
+              state: ''
+            }
+          ];
         }
 
-        html += `<div style="margin-top:14px;font-size:11px;color:#666;">
-          Source: Live network simulator<br>
-          Tracking numbers are visible. Packages await the word to move.
-        </div>`;
+        let html = '';
+        steps.forEach(s => {
+          html += `
+            <div class="timeline-step ${s.state}">
+              <div class="timeline-dot"></div>
+              <div class="step-title">${s.title}</div>
+              ${s.detail ? `<div class="step-detail">${s.detail.replace(/\n/g,'<br>')}</div>` : ''}
+              ${s.time ? `<div class="step-time">${s.time.replace(/\n/g,'<br>')}</div>` : ''}
+              ${s.link ? `<a href="#" class="step-link" onclick="return false">View more details</a>` : ''}
+            </div>`;
+        });
 
-        content.innerHTML = html;
-      }, 800);
+        timeline.innerHTML = html;
+
+        fromTo.innerHTML = `
+          <div class="from-to-label">TRACKING NUMBER</div>
+          <div class="from-to-value">${currentTracking}</div>
+        `;
+      }, 700);
     }
 
+    // Init
     renderBarcodes(DEFAULT_TRACK);
 
     document.querySelectorAll('[contenteditable]').forEach(el => {
-      el.addEventListener('focus', () => el.style.outline = '2px dashed #0066cc');
+      el.addEventListener('focus', () => el.style.outline = '2px solid #5e5ce6');
       el.addEventListener('blur', () => el.style.outline = 'none');
     });
   </script>
