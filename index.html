@@ -217,6 +217,15 @@
       color: var(--muted);
       margin-top: 3px;
     }
+    .item-link {
+      display: inline-block;
+      margin-top: 5px;
+      font-size: 13.5px;
+      color: var(--purple);
+      font-weight: 500;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
 
     .details {
       margin-top: 32px;
@@ -331,9 +340,9 @@
     </div>
 
     <div class="card" id="card">
-      <div class="status-badge">In Transit</div>
-      <div class="eta" id="eta">Still in Texas</div>
-      <div class="eta-sub" id="etaSub">Origin scan complete · Awaiting departure</div>
+      <div class="status-badge">Out for Delivery</div>
+      <div class="eta" id="eta">By end of day</div>
+      <div class="eta-sub" id="etaSub">Out for delivery in Defuniak Springs, FL</div>
 
       <div class="timeline" id="timeline"></div>
 
@@ -348,11 +357,11 @@
         </div>
         <div class="detail-row">
           <span class="detail-label">Origin</span>
-          <span class="detail-value">Austin, TX</span>
+          <span class="detail-value">Houston, TX</span>
         </div>
         <div class="detail-row">
           <span class="detail-label">Destination</span>
-          <span class="detail-value">Pace, FL</span>
+          <span class="detail-value">Milton, FL</span>
         </div>
       </div>
     </div>
@@ -363,9 +372,7 @@
         <div class="label-top">
           <div class="from" contenteditable="true">
             <strong>FROM</strong>
-            Reeve Musk<br>
-            1945 Cedar Avenue<br>
-            Austin, Texas 78701
+            Houston, TX US
           </div>
           <div class="shipper">
             <div style="font-size:9px;color:#8e8e93;font-weight:600">SHIPPER</div>
@@ -375,9 +382,7 @@
         <div class="to-row">
           <div class="to" contenteditable="true">
             <strong>TO</strong>
-            Anita Vincent<br>
-            @4817 Friendly St<br>
-            Apt 38
+            Milton, FL US
           </div>
           <div class="state">FL</div>
         </div>
@@ -409,50 +414,40 @@
       const num = tnInput.value.trim() || '11881-87236-402382053';
       barcode(num);
 
-      document.getElementById('eta').textContent = 'Still in Texas';
-      document.getElementById('etaSub').textContent = 'Origin facility · Awaiting departure';
+      document.getElementById('eta').textContent = 'By end of day';
+      document.getElementById('etaSub').textContent = 'Out for delivery in Defuniak Springs, FL';
 
+      // Exact timeline from user
       const steps = [
         {
-          title: 'Label Created',
-          desc: 'Reeve Musk · 1945 Cedar Avenue · Austin, TX 78701',
-          time: 'Aug 19, 2026 · 9:14 AM',
+          title: 'FROM: HOUSTON, TX US',
+          desc: '',
+          time: 'Label Created<br>8/10/26 11:00 AM',
           state: 'done'
         },
         {
-          title: 'Shipment Information Received',
-          desc: 'Electronic shipping info received by carrier',
-          time: 'Aug 19, 2026 · 9:22 AM',
+          title: 'WE HAVE YOUR PACKAGE',
+          desc: '',
+          time: '',
           state: 'done'
         },
         {
-          title: 'We Have Your Package',
-          desc: 'Austin, TX Sorting Facility',
-          time: 'Aug 20, 2026 · 6:41 AM',
+          title: 'ON THE WAY',
+          desc: 'DEFUNIAK SPRINGS, FL',
+          time: '8/14/26 3:12 AM',
           state: 'done'
         },
         {
-          title: 'Arrived at Origin Facility',
-          desc: 'Austin, TX',
-          time: 'Aug 21, 2026 · 11:18 AM',
-          state: 'current'
+          title: 'OUT FOR DELIVERY',
+          desc: 'DEFUNIAK SPRINGS, FL',
+          time: '8/14/26 3:33 AM',
+          state: 'current',
+          link: true
         },
         {
-          title: 'In Transit to Next Facility',
-          desc: 'Pending departure from Texas',
-          time: '',
-          state: ''
-        },
-        {
-          title: 'Out for Delivery',
-          desc: 'Destination: Anita Vincent · Apt 38',
-          time: '',
-          state: ''
-        },
-        {
-          title: 'Delivered',
-          desc: '4817 Friendly St, Pace, FL',
-          time: '',
+          title: 'TO: MILTON, FL US',
+          desc: '',
+          time: 'By end of day',
           state: ''
         }
       ];
@@ -465,6 +460,7 @@
             <div class="item-title">${s.title}</div>
             ${s.desc ? `<div class="item-desc">${s.desc}</div>` : ''}
             ${s.time ? `<div class="item-time">${s.time}</div>` : ''}
+            ${s.link ? `<a href="#" class="item-link" onclick="return false">View more details</a>` : ''}
           </div>`;
       });
       timeline.innerHTML = html;
