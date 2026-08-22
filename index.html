@@ -2,76 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Package Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Tracking Details</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
+    :root {
+      --purple: #5e5ce6;
+      --text: #1c1c1e;
+      --muted: #8e8e93;
+      --border: #e5e5ea;
+      --bg: #f2f2f7;
+    }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #f2f2f7;
-      color: #1c1c1e;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
     }
-    .topbar {
+    .header {
       background: #fff;
-      padding: 14px 20px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #e5e5ea;
-      position: sticky;
-      top: 0;
-      z-index: 50;
     }
-    .topbar h1 { font-size: 17px; font-weight: 600; }
-    .topbar-actions { display: flex; gap: 8px; }
+    .header-title { font-size: 17px; font-weight: 600; }
+    .header-actions { display: flex; gap: 10px; }
     .btn {
+      border: none;
+      border-radius: 8px;
       padding: 8px 14px;
       font-size: 13px;
       font-weight: 600;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
     }
-    .btn-gray { background: #e5e5ea; color: #1c1c1e; }
-    .btn-purple { background: #5e5ce6; color: #fff; }
+    .btn-secondary { background: #e5e5ea; color: var(--text); }
+    .btn-primary { background: var(--purple); color: #fff; }
 
-    .container {
-      max-width: 440px;
+    .page {
+      max-width: 430px;
       margin: 0 auto;
-      padding: 20px 16px 80px;
+      padding: 20px 16px 60px;
     }
 
-    .track-input-wrap {
+    .search-card {
       background: #fff;
       border-radius: 14px;
       padding: 16px;
       margin-bottom: 20px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
-    .track-input-wrap label {
-      display: block;
+    .search-label {
       font-size: 12px;
       font-weight: 600;
-      color: #8e8e93;
-      margin-bottom: 8px;
+      color: var(--muted);
       letter-spacing: 0.3px;
+      margin-bottom: 8px;
     }
-    .track-row { display: flex; gap: 8px; }
-    #trackingInput {
+    .search-row { display: flex; gap: 8px; }
+    #tn {
       flex: 1;
-      padding: 12px 14px;
-      font-size: 15px;
+      height: 44px;
+      padding: 0 14px;
       border: 1.5px solid #d1d1d6;
       border-radius: 10px;
+      font-size: 15px;
       outline: none;
       font-family: inherit;
     }
-    #trackingInput:focus { border-color: #5e5ce6; }
-    .btn-go {
+    #tn:focus { border-color: var(--purple); }
+    .go {
+      height: 44px;
       padding: 0 18px;
-      background: #5e5ce6;
+      background: var(--purple);
       color: #fff;
       border: none;
       border-radius: 10px;
@@ -80,361 +89,406 @@
       cursor: pointer;
     }
 
-    .tracking-card {
+    .card {
       background: #fff;
       border-radius: 16px;
-      padding: 28px 22px 32px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 24px 20px 28px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
       display: none;
     }
-    .tracking-card.visible { display: block; animation: slideUp 0.35s ease; }
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: none; }
+    .card.show { display: block; }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0f0ff;
+      color: var(--purple);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+    .status-badge::before {
+      content: "";
+      width: 7px; height: 7px;
+      background: var(--purple);
+      border-radius: 50%;
     }
 
     .eta {
-      font-size: 22px;
-      font-weight: 600;
-      color: #1c1c1e;
-      margin-bottom: 32px;
-      letter-spacing: -0.3px;
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      margin-bottom: 6px;
+    }
+    .eta-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 28px;
     }
 
     .timeline {
       position: relative;
-      padding-left: 32px;
+      padding-left: 28px;
     }
     .timeline::before {
-      content: '';
+      content: "";
       position: absolute;
-      left: 9px;
-      top: 10px;
-      bottom: 40px;
-      width: 4px;
+      left: 7px;
+      top: 8px;
+      bottom: 20px;
+      width: 3px;
       background: #e5e5ea;
-      border-radius: 4px;
+      border-radius: 3px;
     }
-    .timeline-progress {
+    .progress {
       position: absolute;
-      left: 9px;
-      top: 10px;
-      width: 4px;
-      background: #5e5ce6;
-      border-radius: 4px;
+      left: 7px;
+      top: 8px;
+      width: 3px;
+      background: var(--purple);
+      border-radius: 3px;
       z-index: 1;
-      transition: height 0.45s ease;
+      transition: height 0.4s ease;
     }
 
-    .step {
+    .item {
       position: relative;
-      padding-bottom: 28px;
+      padding-bottom: 26px;
     }
-    .step:last-child { padding-bottom: 0; }
+    .item:last-child { padding-bottom: 0; }
 
     .dot {
       position: absolute;
-      left: -32px;
+      left: -28px;
       top: 3px;
-      width: 16px;
-      height: 16px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       background: #e5e5ea;
       border: 3px solid #fff;
       box-shadow: 0 0 0 2px #e5e5ea;
-      z-index: 3;
+      z-index: 2;
     }
-    .step.done .dot {
-      background: #5e5ce6;
-      box-shadow: 0 0 0 2px #5e5ce6;
+    .item.done .dot {
+      background: var(--purple);
+      box-shadow: 0 0 0 2px var(--purple);
     }
-    .step.current .dot {
-      width: 28px;
-      height: 28px;
-      left: -38px;
-      top: -4px;
-      background: #5e5ce6;
-      box-shadow: 0 0 0 6px rgba(94, 92, 230, 0.22);
+    .item.current .dot {
+      width: 24px;
+      height: 24px;
+      left: -33px;
+      top: -2px;
+      background: var(--purple);
+      box-shadow: 0 0 0 5px rgba(94,92,230,0.2);
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .step.current .dot::after {
-      content: '→';
+    .item.current .dot::after {
+      content: "→";
       color: #fff;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
-      line-height: 1;
     }
-    .step.current {
-      background: linear-gradient(90deg, rgba(94,92,230,0.07) 0%, transparent 100%);
-      margin: 0 -14px 12px -14px;
-      padding: 12px 14px 16px 46px;
-      border-radius: 14px;
+    .item.current {
+      background: linear-gradient(90deg, rgba(94,92,230,0.06), transparent);
+      margin: 0 -12px 10px;
+      padding: 10px 12px 14px 40px;
+      border-radius: 12px;
     }
-    .step.current .dot { left: -24px; }
+    .item.current .dot { left: -21px; }
 
-    .step-title {
+    .item-title {
       font-size: 15px;
-      font-weight: 700;
-      color: #1c1c1e;
+      font-weight: 650;
       letter-spacing: -0.2px;
     }
-    .step-sub {
-      font-size: 14px;
+    .item-desc {
+      font-size: 13.5px;
       color: #3a3a3c;
-      margin-top: 3px;
+      margin-top: 2px;
       line-height: 1.35;
     }
-    .step-time {
-      font-size: 13px;
-      color: #8e8e93;
-      margin-top: 4px;
-    }
-    .step-link {
-      display: inline-block;
-      margin-top: 6px;
-      font-size: 14px;
-      color: #5e5ce6;
-      font-weight: 500;
-      text-decoration: underline;
-      text-underline-offset: 2px;
+    .item-time {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 3px;
     }
 
-    .label-section { margin-top: 28px; }
-    .section-title {
+    .details {
+      margin-top: 32px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+    .detail-label { color: var(--muted); }
+    .detail-value { font-weight: 500; text-align: right; }
+
+    .label-wrap { margin-top: 28px; }
+    .label-title {
       font-size: 12px;
       font-weight: 600;
-      color: #8e8e93;
-      letter-spacing: 0.5px;
+      color: var(--muted);
+      letter-spacing: 0.4px;
       margin-bottom: 10px;
       text-transform: uppercase;
     }
-    .label-card {
+    .label {
       background: #fff;
       border-radius: 14px;
+      border: 1px solid var(--border);
       overflow: hidden;
-      box-shadow: 0 2px 14px rgba(0,0,0,0.05);
-      border: 1px solid #e5e5ea;
     }
-    .label-header { display: flex; border-bottom: 1px solid #e5e5ea; }
-    .label-from {
+    .label-top { display: flex; border-bottom: 1px solid var(--border); }
+    .from {
       flex: 1;
       padding: 14px 16px;
-      font-size: 12px;
+      font-size: 12.5px;
       line-height: 1.4;
     }
-    .label-from strong {
+    .from strong {
       display: block;
       font-size: 10px;
-      color: #8e8e93;
+      color: var(--muted);
       margin-bottom: 4px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
-    .label-shipper {
-      width: 110px;
-      padding: 12px 10px;
+    .shipper {
+      width: 108px;
+      padding: 12px 8px;
       text-align: center;
-      border-left: 1px solid #e5e5ea;
+      border-left: 1px solid var(--border);
       font-size: 10px;
     }
-    .label-shipper .logo {
+    .shipper .logo {
       font-weight: 800;
       font-size: 12px;
-      color: #5e5ce6;
+      color: var(--purple);
       line-height: 1.15;
-      margin-top: 4px;
+      margin-top: 3px;
     }
-    .label-to {
+    .to-row {
       padding: 14px 16px;
       display: flex;
       align-items: center;
       gap: 12px;
-      border-bottom: 1px solid #e5e5ea;
+      border-bottom: 1px solid var(--border);
     }
-    .label-to-text { flex: 1; font-size: 13px; line-height: 1.4; }
-    .label-to-text strong {
+    .to { flex: 1; font-size: 13px; line-height: 1.4; }
+    .to strong {
       display: block;
       font-size: 10px;
-      color: #8e8e93;
+      color: var(--muted);
       margin-bottom: 4px;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
     }
-    .fl {
-      width: 52px; height: 52px;
-      border: 2.5px solid #1c1c1e;
+    .state {
+      width: 48px; height: 48px;
+      border: 2.5px solid var(--text);
       border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
     }
-    .label-barcode { padding: 18px 16px; text-align: center; }
-    .label-track-num {
+    .barcode-area {
+      padding: 16px;
+      text-align: center;
+    }
+    .tn-text {
       font-size: 13px;
       font-weight: 600;
-      letter-spacing: 0.6px;
-      margin-top: 8px;
-    }
-    .hint {
-      text-align: center;
-      font-size: 12px;
-      color: #8e8e93;
-      margin-top: 16px;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
     }
   </style>
 </head>
 <body>
-  <div class="topbar">
-    <h1>Package Tracker</h1>
-    <div class="topbar-actions">
-      <button class="btn btn-gray" onclick="showLabel()">Label</button>
-      <button class="btn btn-purple" onclick="document.getElementById('trackingInput').focus()">Track</button>
+  <div class="header">
+    <div class="header-title">Tracking</div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" onclick="showLabel()">Label</button>
+      <button class="btn btn-primary" onclick="document.getElementById('tn').focus()">Track</button>
     </div>
   </div>
 
-  <div class="container">
-    <div class="track-input-wrap">
-      <label>ENTER TRACKING NUMBER</label>
-      <div class="track-row">
-        <input type="text" id="trackingInput" placeholder="Paste or type tracking number" value="11881-87236-402382053">
-        <button class="btn-go" onclick="doTrack()">Track</button>
+  <div class="page">
+    <div class="search-card">
+      <div class="search-label">TRACKING NUMBER</div>
+      <div class="search-row">
+        <input id="tn" type="text" value="11881-87236-402382053" placeholder="Enter tracking number">
+        <button class="go" onclick="track()">Track</button>
       </div>
     </div>
 
-    <div class="tracking-card" id="trackingCard">
-      <div class="eta" id="etaText">Label created — still in Texas</div>
+    <div class="card" id="card">
+      <div class="status-badge">In Transit</div>
+      <div class="eta" id="eta">Still in Texas</div>
+      <div class="eta-sub" id="etaSub">Origin scan complete · Awaiting departure</div>
+
       <div class="timeline" id="timeline"></div>
+
+      <div class="details">
+        <div class="detail-row">
+          <span class="detail-label">Tracking Number</span>
+          <span class="detail-value" id="detailTn">11881-87236-402382053</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Service</span>
+          <span class="detail-value">Global Express</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Origin</span>
+          <span class="detail-value">Austin, TX</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Destination</span>
+          <span class="detail-value">Pace, FL</span>
+        </div>
+      </div>
     </div>
 
-    <div class="label-section" id="labelSection">
-      <div class="section-title">Shipping Label</div>
-      <div class="label-card">
-        <div class="label-header">
-          <div class="label-from" contenteditable="true">
+    <div class="label-wrap" id="labelWrap">
+      <div class="label-title">Shipping Label</div>
+      <div class="label">
+        <div class="label-top">
+          <div class="from" contenteditable="true">
             <strong>FROM</strong>
             Reeve Musk<br>
             1945 Cedar Avenue<br>
             Austin, Texas 78701
           </div>
-          <div class="label-shipper">
-            <div style="font-size:9px;color:#8e8e93;font-weight:600;">SHIPPER</div>
+          <div class="shipper">
+            <div style="font-size:9px;color:#8e8e93;font-weight:600">SHIPPER</div>
             <div class="logo">SHIPPER<br>GLOBAL EXPRESS</div>
           </div>
         </div>
-        <div class="label-to">
-          <div class="label-to-text" contenteditable="true">
+        <div class="to-row">
+          <div class="to" contenteditable="true">
             <strong>TO</strong>
             Anita Vincent<br>
             @4817 Friendly St<br>
             Apt 38
           </div>
-          <div class="fl">FL</div>
+          <div class="state">FL</div>
         </div>
-        <div class="label-barcode">
-          <svg id="barcode"></svg>
-          <div class="label-track-num" id="labelTrack">11881-87236-402382053</div>
+        <div class="barcode-area">
+          <svg id="bc"></svg>
+          <div class="tn-text" id="labelTn">11881-87236-402382053</div>
         </div>
       </div>
-      <div class="hint">Package is still in Texas • Enter tracking number and hit Track</div>
     </div>
   </div>
 
   <script>
-    const input = document.getElementById('trackingInput');
-    const card = document.getElementById('trackingCard');
+    const tnInput = document.getElementById('tn');
+    const card = document.getElementById('card');
     const timeline = document.getElementById('timeline');
-    const etaText = document.getElementById('etaText');
-    const labelSection = document.getElementById('labelSection');
+    const labelWrap = document.getElementById('labelWrap');
 
-    function renderBarcode(num) {
-      const clean = (num || '000000').replace(/[^a-zA-Z0-9]/g, '');
-      JsBarcode('#barcode', clean, {
-        format: 'CODE128',
-        width: 1.5,
-        height: 42,
-        displayValue: false,
-        margin: 0,
-        background: '#ffffff'
+    function barcode(num) {
+      const clean = (num || '0').replace(/[^A-Za-z0-9]/g, '');
+      JsBarcode('#bc', clean, {
+        format: 'CODE128', width: 1.45, height: 40,
+        displayValue: false, margin: 0, background: '#fff'
       });
-      document.getElementById('labelTrack').textContent = num;
+      document.getElementById('labelTn').textContent = num;
+      document.getElementById('detailTn').textContent = num;
     }
 
-    function doTrack() {
-      const num = input.value.trim() || '11881-87236-402382053';
-      renderBarcode(num);
+    function track() {
+      const num = tnInput.value.trim() || '11881-87236-402382053';
+      barcode(num);
 
-      // Package is still in Texas (origin)
-      etaText.textContent = 'Label created — still in Texas';
+      document.getElementById('eta').textContent = 'Still in Texas';
+      document.getElementById('etaSub').textContent = 'Origin facility · Awaiting departure';
 
       const steps = [
         {
-          title: 'FROM: Reeve Musk',
-          sub: '1945 Cedar Avenue<br>Austin, Texas 78701',
-          time: 'Label Created<br>8/19/26 9:00 AM',
+          title: 'Label Created',
+          desc: 'Reeve Musk · 1945 Cedar Avenue · Austin, TX 78701',
+          time: 'Aug 19, 2026 · 9:14 AM',
           state: 'done'
         },
         {
-          title: 'LABEL CREATED',
-          sub: 'Shipping label registered on the network',
-          time: '8/19/26 9:00 AM',
+          title: 'Shipment Information Received',
+          desc: 'Electronic shipping info received by carrier',
+          time: 'Aug 19, 2026 · 9:22 AM',
           state: 'done'
         },
         {
-          title: 'WE HAVE YOUR PACKAGE',
-          sub: 'AUSTIN, TX',
-          time: 'Package accepted at origin facility',
-          state: 'current',
-          link: true
+          title: 'We Have Your Package',
+          desc: 'Austin, TX Sorting Facility',
+          time: 'Aug 20, 2026 · 6:41 AM',
+          state: 'done'
         },
         {
-          title: 'ON THE WAY',
-          sub: 'Pending departure from Texas',
+          title: 'Arrived at Origin Facility',
+          desc: 'Austin, TX',
+          time: 'Aug 21, 2026 · 11:18 AM',
+          state: 'current'
+        },
+        {
+          title: 'In Transit to Next Facility',
+          desc: 'Pending departure from Texas',
           time: '',
           state: ''
         },
         {
-          title: 'TO: Anita Vincent',
-          sub: '@4817 Friendly St<br>Apt 38',
-          time: 'Destination: Florida',
+          title: 'Out for Delivery',
+          desc: 'Destination: Anita Vincent · Apt 38',
+          time: '',
+          state: ''
+        },
+        {
+          title: 'Delivered',
+          desc: '4817 Friendly St, Pace, FL',
+          time: '',
           state: ''
         }
       ];
 
-      let html = '<div class="timeline-progress" id="progressBar"></div>';
-      steps.forEach((s) => {
+      let html = '<div class="progress" id="prog"></div>';
+      steps.forEach(s => {
         html += `
-          <div class="step ${s.state}">
+          <div class="item ${s.state}">
             <div class="dot"></div>
-            <div class="step-title">${s.title}</div>
-            ${s.sub ? `<div class="step-sub">${s.sub}</div>` : ''}
-            ${s.time ? `<div class="step-time">${s.time}</div>` : ''}
-            ${s.link ? `<a href="#" class="step-link" onclick="return false">View more details</a>` : ''}
+            <div class="item-title">${s.title}</div>
+            ${s.desc ? `<div class="item-desc">${s.desc}</div>` : ''}
+            ${s.time ? `<div class="item-time">${s.time}</div>` : ''}
           </div>`;
       });
       timeline.innerHTML = html;
 
-      setTimeout(() => {
-        const current = timeline.querySelector('.step.current');
-        const bar = document.getElementById('progressBar');
-        if (current && bar) {
-          bar.style.height = (current.offsetTop + 16) + 'px';
+      requestAnimationFrame(() => {
+        const current = timeline.querySelector('.item.current');
+        const prog = document.getElementById('prog');
+        if (current && prog) {
+          prog.style.height = (current.offsetTop + 12) + 'px';
         }
-      }, 60);
+      });
 
-      card.classList.add('visible');
-      labelSection.style.display = 'none';
+      card.classList.add('show');
+      labelWrap.style.display = 'none';
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function showLabel() {
-      card.classList.remove('visible');
-      labelSection.style.display = 'block';
+      card.classList.remove('show');
+      labelWrap.style.display = 'block';
     }
 
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') doTrack();
-    });
-
-    renderBarcode(input.value);
+    tnInput.addEventListener('keydown', e => { if (e.key === 'Enter') track(); });
+    barcode(tnInput.value);
 
     document.querySelectorAll('[contenteditable]').forEach(el => {
       el.addEventListener('focus', () => el.style.outline = '2px solid #5e5ce6');
