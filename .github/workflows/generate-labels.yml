@@ -1,0 +1,53 @@
+name: One-Click Generate + Print Labels
+
+on:
+  issues:
+    types: [opened, labeled]
+  workflow_dispatch:
+    inputs:
+      tracking:
+        description: 'Optional tracking number override'
+        required: false
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'shipping-label')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate labels from issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
+        run: node from-github-issues.js
+
+      - name: Upload generated labels
+        uses: actions/upload-artifact@v4
+        with:
+          name: shipping-labels-${{ github.run_number }}
+          path: from-issues/
+          retention-days: 7
+
+      - name: Comment on issue (if triggered by issue)
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '📦 **Label generated!**\n\nStatus: **LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP**\n\nThe tracking number is now visible on the network.\nThe package has **not** started moving yet.\n\nDownload the artifact from the Actions tab.'
+            })
