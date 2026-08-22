@@ -1,0 +1,21 @@
+{
+  "name": "shipping-label-generator",
+  "version": "2.0.0",
+  "description": "Breaking Limits shipping label generator with real barcodes, batch, thermal, GitHub issues, and carrier tracking",
+  "main": "track.js",
+  "scripts": {
+    "track": "node track.js",
+    "batch": "node batch-generator.js",
+    "issues": "node from-github-issues.js",
+    "pdf": "node csv-to-pdf.js"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.0",
+    "pdfkit": "^0.15.0",
+    "jsbarcode": "^3.11.6",
+    "dotenv": "^16.4.5"
+  },
+  "keywords": ["shipping", "label", "barcode", "thermal", "tracking", "ups", "fedex"],
+  "author": "AppyCatcherBot",
+  "license": "MIT"
+}
