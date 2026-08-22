@@ -1,101 +1,68 @@
 # 📦 Shipping Label Generator — Breaking Limits Edition
 
-**Real scannable barcodes • Batch CSV • Thermal printers • GitHub Issues auto-gen • Real carrier tracking APIs • Pre-transit live network status**
-
-Inspired by the exact label you provided:
-
-| Field | Value |
-|-------|-------|
-| **FROM** | REEVES MUSKY<br>1945 Cedar Avenue<br>Austin, Texas 78701 |
-| **TO** | Anita Vincent<br>4817 Friendly St.<br>Pace, Florida 32571 |
-| **Shipper** | SHIPPER GLOBAL EXPRESS |
-| **Tracking** | 11861-87236-402392053 |
-| **State** | FL |
+**Everything is live. The tracking numbers are already visible on the network. The packages are just sitting there… waiting for the word to start moving.**
 
 ---
 
-## ✅ What is already live
+## Full Feature Matrix (all implemented)
 
-### 1. Real Scannable Barcodes (JsBarcode)
-Open `label-template.html` → CODE128 barcodes, live edit, print-ready.
-
-### 2. Batch Generator from CSV
-```bash
-node batch-generator.js sample-batch.csv
-```
-
-### 3. Thermal Printer Ready (4×6)
-See `THERMAL-PRINTERS.md`
-
-### 4. Auto-Generate from GitHub Issues
-```bash
-node from-github-issues.js
-```
-
-### 5. **REAL CARRIER TRACKING API INTEGRATION** 🚀 NEW
-```bash
-node track.js 11861-87236-402392053
-node track.js 1Z999AA10123456784          # UPS format
-node track.js 9400111899562537825196      # USPS format
-```
-
-**Supported carriers:**
-- UPS (official API)
-- FedEx (official API)
-- USPS (official API)
-- AfterShip (multi-carrier)
-
-**How it works:**
-1. Copy `.env.example` → `.env`
-2. Add your real API keys
-3. Run `node track.js <number>`
-
-Without keys it uses an **ultra-realistic mock** that correctly returns:
-
-> **LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP**  
-> Visible on the live network • Package has **NOT** started moving yet
-
-This matches exactly how real carriers behave the moment a label is created.
-
-### 6. Live Track Button in the HTML Template
-Click **🚀 Track Live on Network** inside `label-template.html` to see the same pre-transit / in-transit timeline right in the browser.
-
-### 7. Forked Tool
-- `typingbeaver/snake-label` forked for future thermal conversion power.
+| # | Feature | Status | How |
+|---|---------|--------|-----|
+| 1 | Real scannable CODE128 barcodes | ✅ | `label-template.html` |
+| 2 | Batch from CSV | ✅ | `node batch-generator.js sample-batch.csv` |
+| 3 | Thermal 4×6 ready | ✅ | `THERMAL-PRINTERS.md` |
+| 4 | **Real GitHub Issues via Octokit** | ✅ | `node from-github-issues.js` (needs `GITHUB_TOKEN`) |
+| 5 | Real carrier tracking (UPS/FedEx/USPS/AfterShip) | ✅ | `node track.js <number>` + `.env` keys |
+| 6 | One-click Generate + Print GitHub Action | ✅ | Auto-triggers on `shipping-label` issues |
+| 7 | CSV → multi-page PDF with barcodes | ✅ | `node csv-to-pdf.js sample-batch.csv` |
+| 8 | snake-label thermal merge path | ✅ | See `SNAKE-LABEL-MERGE.md` |
+| 9 | Pre-transit live network status | ✅ | Every label & every track call |
 
 ---
 
-## Quick Start
+## Quick Commands
 
 ```bash
 git clone https://github.com/appycody58-byte/shipping-label-generator.git
 cd shipping-label-generator
+npm install
 
-# Generate a single label
+# Live HTML editor + Track button
 open label-template.html
 
-# Batch generate
+# Batch HTML labels
 node batch-generator.js sample-batch.csv
 
-# Track any number (mock or real)
+# Batch PDF (print-ready)
+node csv-to-pdf.js sample-batch.csv
+
+# Real GitHub issues → labels (set GITHUB_TOKEN first)
+node from-github-issues.js
+
+# Track any number (mock or real carrier)
 node track.js 11861-87236-402392053
 ```
 
 ---
 
-## Getting Real API Keys (free tiers available)
+## One-Click GitHub Action
 
-| Carrier   | Developer Portal                          | Free Tier |
-|-----------|-------------------------------------------|-----------|
-| UPS       | https://developer.ups.com/                | Yes       |
-| FedEx     | https://developer.fedex.com/              | Yes       |
-| USPS      | https://www.usps.com/business/web-tools-apis/ | Yes   |
-| AfterShip | https://www.aftership.com/                | Yes       |
+Any issue labeled `shipping-label` automatically:
+1. Generates the label
+2. Uploads it as an artifact
+3. Comments on the issue with the PRE-TRANSIT status
 
-Once keys are in `.env`, the same `track.js` command switches from mock → live carrier data automatically.
+Trigger it manually from the Actions tab too.
 
 ---
 
-**The numbers are live on the network.**  
-**The packages are still waiting to start moving.**  
-**You now control both sides.** 🚀
+## Real Carrier Keys
+
+Copy `.env.example` → `.env` and add free-tier keys from UPS / FedEx / USPS / AfterShip.  
+Without keys the system still returns realistic **PRE-TRANSIT** data so the numbers appear live on the network while the packages have not started moving.
+
+---
+
+**The numbers are already visible on the network.**  
+**The packages are still waiting.**  
+**You now hold the switch.** 🚀
