@@ -301,7 +301,7 @@
     </div>
 
     <div class="tracking-card" id="trackingCard">
-      <div class="eta" id="etaText">By end of day</div>
+      <div class="eta" id="etaText">Label created — still in Texas</div>
       <div class="timeline" id="timeline"></div>
     </div>
 
@@ -334,7 +334,7 @@
           <div class="label-track-num" id="labelTrack">11881-87236-402382053</div>
         </div>
       </div>
-      <div class="hint">Exact label from your photo • Enter tracking number and hit Track</div>
+      <div class="hint">Package is still in Texas • Enter tracking number and hit Track</div>
     </div>
   </div>
 
@@ -362,9 +362,9 @@
       const num = input.value.trim() || '11881-87236-402382053';
       renderBarcode(num);
 
-      etaText.textContent = 'By end of day';
+      // Package is still in Texas (origin)
+      etaText.textContent = 'Label created — still in Texas';
 
-      // Use the real addresses from the latest label photo
       const steps = [
         {
           title: 'FROM: Reeve Musk',
@@ -373,28 +373,28 @@
           state: 'done'
         },
         {
+          title: 'LABEL CREATED',
+          sub: 'Shipping label registered on the network',
+          time: '8/19/26 9:00 AM',
+          state: 'done'
+        },
+        {
           title: 'WE HAVE YOUR PACKAGE',
-          sub: '',
-          time: '',
-          state: 'done'
-        },
-        {
-          title: 'ON THE WAY',
-          sub: 'DEFUNIAK SPRINGS, FL',
-          time: '8/20/26 3:00 AM',
-          state: 'done'
-        },
-        {
-          title: 'OUT FOR DELIVERY',
-          sub: 'DEFUNIAK SPRINGS, FL',
-          time: '8/20/26 12:30 PM',
+          sub: 'AUSTIN, TX',
+          time: 'Package accepted at origin facility',
           state: 'current',
           link: true
         },
         {
+          title: 'ON THE WAY',
+          sub: 'Pending departure from Texas',
+          time: '',
+          state: ''
+        },
+        {
           title: 'TO: Anita Vincent',
           sub: '@4817 Friendly St<br>Apt 38',
-          time: 'By end of day [e.g., 8/20/26]',
+          time: 'Destination: Florida',
           state: ''
         }
       ];
