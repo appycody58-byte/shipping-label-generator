@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Tracking Details</title>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <title>Tracking</title>
   <style>
     :root {
       --purple: #5e5ce6;
@@ -41,6 +40,9 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
     }
     .btn-secondary { background: #e5e5ea; color: var(--text); }
     .btn-primary { background: var(--purple); color: #fff; }
@@ -94,9 +96,7 @@
       border-radius: 16px;
       padding: 24px 20px 28px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-      display: none;
     }
-    .card.show { display: block; }
 
     .status-badge {
       display: inline-flex;
@@ -240,93 +240,13 @@
     }
     .detail-label { color: var(--muted); }
     .detail-value { font-weight: 500; text-align: right; }
-
-    .label-wrap { margin-top: 28px; }
-    .label-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.4px;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-    .label {
-      background: #fff;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .label-top { display: flex; border-bottom: 1px solid var(--border); }
-    .from {
-      flex: 1;
-      padding: 14px 16px;
-      font-size: 12.5px;
-      line-height: 1.4;
-    }
-    .from strong {
-      display: block;
-      font-size: 10px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      letter-spacing: 0.4px;
-    }
-    .shipper {
-      width: 108px;
-      padding: 12px 8px;
-      text-align: center;
-      border-left: 1px solid var(--border);
-      font-size: 10px;
-    }
-    .shipper .logo {
-      font-weight: 800;
-      font-size: 12px;
-      color: var(--purple);
-      line-height: 1.15;
-      margin-top: 3px;
-    }
-    .to-row {
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid var(--border);
-    }
-    .to { flex: 1; font-size: 13px; line-height: 1.4; }
-    .to strong {
-      display: block;
-      font-size: 10px;
-      color: var(--muted);
-      margin-bottom: 4px;
-      letter-spacing: 0.4px;
-    }
-    .state {
-      width: 48px; height: 48px;
-      border: 2.5px solid var(--text);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      font-weight: 800;
-    }
-    .barcode-area {
-      padding: 16px;
-      text-align: center;
-    }
-    .tn-text {
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.5px;
-      margin-top: 6px;
-    }
   </style>
 </head>
 <body>
   <div class="header">
     <div class="header-title">Tracking</div>
     <div class="header-actions">
-      <button class="btn btn-secondary" onclick="showLabel()">Label</button>
-      <button class="btn btn-primary" onclick="document.getElementById('tn').focus()">Track</button>
+      <a href="label.html" class="btn btn-secondary">Label Page</a>
     </div>
   </div>
 
@@ -341,8 +261,8 @@
 
     <div class="card" id="card">
       <div class="status-badge">Out for Delivery</div>
-      <div class="eta" id="eta">By end of day</div>
-      <div class="eta-sub" id="etaSub">Out for delivery in Defuniak Springs, FL</div>
+      <div class="eta">By end of day</div>
+      <div class="eta-sub">Out for delivery in Defuniak Springs, FL</div>
 
       <div class="timeline" id="timeline"></div>
 
@@ -365,59 +285,16 @@
         </div>
       </div>
     </div>
-
-    <div class="label-wrap" id="labelWrap">
-      <div class="label-title">Shipping Label</div>
-      <div class="label">
-        <div class="label-top">
-          <div class="from" contenteditable="true">
-            <strong>FROM</strong>
-            Houston, TX US
-          </div>
-          <div class="shipper">
-            <div style="font-size:9px;color:#8e8e93;font-weight:600">SHIPPER</div>
-            <div class="logo">SHIPPER<br>GLOBAL EXPRESS</div>
-          </div>
-        </div>
-        <div class="to-row">
-          <div class="to" contenteditable="true">
-            <strong>TO</strong>
-            Milton, FL US
-          </div>
-          <div class="state">FL</div>
-        </div>
-        <div class="barcode-area">
-          <svg id="bc"></svg>
-          <div class="tn-text" id="labelTn">11881-87236-402382053</div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <script>
     const tnInput = document.getElementById('tn');
-    const card = document.getElementById('card');
     const timeline = document.getElementById('timeline');
-    const labelWrap = document.getElementById('labelWrap');
-
-    function barcode(num) {
-      const clean = (num || '0').replace(/[^A-Za-z0-9]/g, '');
-      JsBarcode('#bc', clean, {
-        format: 'CODE128', width: 1.45, height: 40,
-        displayValue: false, margin: 0, background: '#fff'
-      });
-      document.getElementById('labelTn').textContent = num;
-      document.getElementById('detailTn').textContent = num;
-    }
 
     function track() {
       const num = tnInput.value.trim() || '11881-87236-402382053';
-      barcode(num);
+      document.getElementById('detailTn').textContent = num;
 
-      document.getElementById('eta').textContent = 'By end of day';
-      document.getElementById('etaSub').textContent = 'Out for delivery in Defuniak Springs, FL';
-
-      // Recent dates (relative to today Aug 22, 2026)
       const steps = [
         {
           title: 'FROM: HOUSTON, TX US',
@@ -472,24 +349,10 @@
           prog.style.height = (current.offsetTop + 12) + 'px';
         }
       });
-
-      card.classList.add('show');
-      labelWrap.style.display = 'none';
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function showLabel() {
-      card.classList.remove('show');
-      labelWrap.style.display = 'block';
     }
 
     tnInput.addEventListener('keydown', e => { if (e.key === 'Enter') track(); });
-    barcode(tnInput.value);
-
-    document.querySelectorAll('[contenteditable]').forEach(el => {
-      el.addEventListener('focus', () => el.style.outline = '2px solid #5e5ce6');
-      el.addEventListener('blur', () => el.style.outline = 'none');
-    });
+    track(); // auto load on open
   </script>
 </body>
 </html>
