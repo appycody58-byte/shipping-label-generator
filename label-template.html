@@ -2,80 +2,141 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shipping Label Generator - Breaking Limits</title>
+  <title>Shipping Label Generator - Breaking Limits Edition</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
-    body { font-family: Arial, sans-serif; background: #f0f0f0; display: flex; justify-content: center; padding: 40px; }
+    * { box-sizing: border-box; }
+    body { font-family: Arial, Helvetica, sans-serif; background: #e8e8e8; display: flex; flex-direction: column; align-items: center; padding: 30px; margin: 0; }
+    h1 { color: #111; margin-bottom: 10px; }
+    .controls { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    button { padding: 10px 18px; font-size: 14px; cursor: pointer; background: #0066cc; color: white; border: none; border-radius: 6px; font-weight: bold; }
+    button:hover { background: #004999; }
     .label {
-      width: 400px;
+      width: 4in; /* standard thermal size */
+      min-height: 6in;
       background: white;
-      border: 1px solid #ccc;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      border: 1px solid #999;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
       padding: 0;
       overflow: hidden;
+      page-break-after: always;
     }
     .top { display: flex; border-bottom: 2px solid #000; }
-    .from { flex: 1; padding: 12px; font-size: 13px; }
-    .from strong { display: block; margin-bottom: 4px; }
-    .shipper { width: 140px; padding: 12px; text-align: center; border-left: 1px solid #ccc; font-size: 11px; }
-    .shipper img { max-width: 100px; }
-    .to-section { padding: 12px; border-bottom: 1px solid #000; display: flex; }
-    .to { flex: 1; font-size: 14px; }
-    .to strong { display: block; margin-bottom: 4px; }
-    .fl-box { width: 80px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: bold; border: 2px solid #000; margin-right: 10px; }
-    .barcode-area { padding: 10px; text-align: center; }
-    .barcode { font-family: 'Libre Barcode 39', monospace; font-size: 42px; letter-spacing: 2px; }
-    .tracking { font-size: 12px; margin-top: 4px; }
-    .bottom-barcode { padding: 15px; text-align: center; border-top: 1px solid #000; }
-    .big-barcode { font-family: 'Libre Barcode 39', monospace; font-size: 36px; }
+    .from { flex: 1; padding: 10px 12px; font-size: 12px; line-height: 1.3; }
+    .from strong { display: block; font-size: 11px; margin-bottom: 3px; }
+    .shipper { width: 130px; padding: 10px; text-align: center; border-left: 1px solid #ccc; font-size: 10px; }
+    .shipper .logo { font-weight: 900; font-size: 14px; color: #0066cc; line-height: 1.1; margin: 6px 0; }
+    .to-section { padding: 10px 12px; border-bottom: 2px solid #000; display: flex; align-items: center; gap: 8px; }
+    .to { flex: 1; font-size: 13px; line-height: 1.3; }
+    .to strong { display: block; font-size: 11px; margin-bottom: 3px; }
+    .fl-box { width: 70px; height: 70px; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 900; border: 3px solid #000; flex-shrink: 0; }
+    .side-barcode { text-align: center; font-size: 10px; }
+    .bottom-barcode { padding: 12px; text-align: center; border-top: 1px solid #000; }
+    .tracking-text { font-size: 13px; font-weight: bold; margin-top: 4px; letter-spacing: 1px; }
+    .status { background: #fff3cd; border: 1px solid #ffc107; padding: 6px 10px; margin: 8px 12px; font-size: 11px; text-align: center; border-radius: 4px; }
+    .status strong { color: #856404; }
     @media print {
       body { background: white; padding: 0; }
-      .label { box-shadow: none; border: none; }
+      .controls, h1, .hint { display: none !important; }
+      .label { box-shadow: none; border: none; width: 4in; height: 6in; }
     }
   </style>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+39&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="label">
+  <h1>📦 Shipping Label Generator</h1>
+  <div class="hint" style="margin-bottom:12px;color:#555;font-size:13px;">Click any address to edit live • Real scannable barcodes • Print-ready for thermal</div>
+
+  <div class="controls">
+    <button onclick="window.print()">🖨 Print Label</button>
+    <button onclick="randomTracking()">🎲 New Tracking #</button>
+    <button onclick="loadSample()">↻ Reset to Sample</button>
+  </div>
+
+  <div class="label" id="label">
     <div class="top">
-      <div class="from">
+      <div class="from" contenteditable="true">
         <strong>FROM:</strong>
         REEVES MUSKY<br>
         1945 Cedar Avenue<br>
         Austin, Texas 78701
       </div>
       <div class="shipper">
-        <strong>SHIPPER:</strong><br>
-        <div style="font-weight:bold; font-size:16px; color:#0066cc; margin:8px 0;">SHIPPER<br>GLOBAL EXPRESS</div>
+        <strong>SHIPPER:</strong>
+        <div class="logo">SHIPPER<br>GLOBAL EXPRESS</div>
       </div>
     </div>
 
     <div class="to-section">
-      <div class="to">
+      <div class="to" contenteditable="true">
         <strong>TO:</strong>
         Anita Vincent<br>
         4817 Friendly St.<br>
         Pace, Florida 32571
       </div>
       <div class="fl-box">FL</div>
-      <div style="text-align:center; font-size:11px;">
-        <div class="barcode">*402388927*</div>
-        <div>11861-87236-<br>402392053</div>
+      <div class="side-barcode">
+        <svg id="sideBarcode"></svg>
+        <div id="sideTrack" style="margin-top:2px;">11861-87236-402392053</div>
       </div>
     </div>
 
+    <div class="status">
+      <strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
+      <span style="font-size:10px;">Visible on network • Package has <u>not</u> started moving yet</span>
+    </div>
+
     <div class="bottom-barcode">
-      <div class="big-barcode">*11861-87236-402392053*</div>
-      <div class="tracking">11861-87236-402392053</div>
+      <svg id="mainBarcode"></svg>
+      <div class="tracking-text" id="mainTrack">11861-87236-402392053</div>
     </div>
   </div>
 
   <script>
-    // Live edit mode - click any text to change it
-    document.querySelectorAll('.from, .to, .shipper').forEach(el => {
-      el.contentEditable = true;
-      el.style.outline = '1px dashed transparent';
-      el.onfocus = () => el.style.outline = '1px dashed #0066cc';
-      el.onblur = () => el.style.outline = '1px dashed transparent';
+    const DEFAULT_TRACK = "11861-87236-402392053";
+
+    function renderBarcodes(tracking) {
+      // Clean tracking for barcode (remove dashes for Code128)
+      const clean = tracking.replace(/-/g, "");
+      
+      JsBarcode("#mainBarcode", clean, {
+        format: "CODE128",
+        width: 1.8,
+        height: 55,
+        displayValue: false,
+        margin: 0
+      });
+
+      JsBarcode("#sideBarcode", clean.slice(-9), {
+        format: "CODE128",
+        width: 1.2,
+        height: 35,
+        displayValue: false,
+        margin: 0
+      });
+
+      document.getElementById("mainTrack").textContent = tracking;
+      document.getElementById("sideTrack").textContent = tracking;
+    }
+
+    function randomTracking() {
+      const part1 = Math.floor(10000 + Math.random() * 90000);
+      const part2 = Math.floor(10000 + Math.random() * 90000);
+      const part3 = Math.floor(100000000 + Math.random() * 900000000);
+      const track = `${part1}-${part2}-${part3}`;
+      renderBarcodes(track);
+    }
+
+    function loadSample() {
+      renderBarcodes(DEFAULT_TRACK);
+    }
+
+    // Initial render
+    renderBarcodes(DEFAULT_TRACK);
+
+    // Make addresses editable with visual feedback
+    document.querySelectorAll('[contenteditable]').forEach(el => {
+      el.addEventListener('focus', () => el.style.outline = '2px dashed #0066cc');
+      el.addEventListener('blur', () => el.style.outline = 'none');
     });
   </script>
 </body>
