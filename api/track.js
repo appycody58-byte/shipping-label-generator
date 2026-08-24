@@ -112,20 +112,20 @@ export default async function handler(req, res) {
     }
   }
 
-  // 3. Realistic fallback (current UI timeline) when no keys / no hit
+  // 3. Realistic fallback — exact screenshot timeline
   if (!result) {
     result = {
       trackingNumber,
-      carrier: 'Global Express',
+      carrier: 'FedEx',
       status: 'Out for Delivery',
       statusDescription: 'Out for delivery in Defuniak Springs, FL',
       isPreTransit: false,
       events: [
         {
-          title: 'FROM: HOUSTON, TX US',
-          desc: '',
-          location: 'Houston, TX',
-          time: 'Label Created · 8/20/26 11:00 AM',
+          title: 'FROM',
+          desc: 'HOUSTON, TX US',
+          location: 'Houston, TX US',
+          time: 'Label Created\n8/10/26 11:00 AM',
           state: 'done'
         },
         {
@@ -139,23 +139,23 @@ export default async function handler(req, res) {
           title: 'ON THE WAY',
           desc: 'DEFUNIAK SPRINGS, FL',
           location: 'Defuniak Springs, FL',
-          time: '8/22/26 3:12 AM',
+          time: '8/14/26 3:12 AM',
           state: 'done'
         },
         {
           title: 'OUT FOR DELIVERY',
           desc: 'DEFUNIAK SPRINGS, FL',
           location: 'Defuniak Springs, FL',
-          time: '8/22/26 3:33 AM',
+          time: '8/14/26 3:33 AM',
           state: 'current',
           link: true
         },
         {
-          title: 'TO: MILTON, FL US',
-          desc: '',
-          location: 'Milton, FL',
+          title: 'TO',
+          desc: 'MILTON, FL US',
+          location: 'Milton, FL US',
           time: 'By end of day',
-          state: ''
+          state: 'to'
         }
       ],
       source: 'Live Network Simulator (add AFTERSHIP_API_KEY / UPS keys for real carrier data)',
