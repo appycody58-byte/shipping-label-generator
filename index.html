@@ -3,348 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shipping · Label & Tracking</title>
+  <title>Global Express · Shipping & AutoBuy USA</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
     :root {
-      --primary: #1a1a1a;
+      --primary: #111;
       --accent: #4D148C;
-      --border: #d8d8d8;
-      --muted: #6b6b6b;
-      --bg: #f7f7f7;
-      --white: #ffffff;
-      --success: #0d6832;
+      --border: #e0e0e0;
+      --muted: #666;
+      --bg: #f5f5f5;
+      --white: #fff;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
       background: var(--bg);
       color: var(--primary);
       min-height: 100vh;
       font-size: 14px;
-      line-height: 1.45;
+      line-height: 1.5;
       -webkit-font-smoothing: antialiased;
     }
-
-    /* Header */
     header {
       background: var(--white);
       border-bottom: 1px solid var(--border);
-      padding: 0 24px;
       height: 56px;
+      padding: 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
     }
-    .brand {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.2px;
-      color: var(--primary);
-    }
-    .brand span { color: var(--accent); font-weight: 800; }
-    nav { display: flex; gap: 4px; }
+    .brand { font-size: 16px; font-weight: 700; }
+    .brand span { color: var(--accent); }
+    nav { display: flex; gap: 2px; flex-wrap: wrap; }
     nav button {
-      background: transparent;
-      border: none;
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-      cursor: pointer;
-      border-radius: 4px;
+      background: none; border: none; padding: 8px 12px;
+      font-size: 13px; font-weight: 500; color: var(--muted);
+      cursor: pointer; border-radius: 4px;
     }
-    nav button:hover { background: #f0f0f0; color: var(--primary); }
-    nav button.active { background: #f0f0f0; color: var(--primary); font-weight: 600; }
-
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 28px 20px 80px;
-    }
-
+    nav button:hover, nav button.active { background: #eee; color: var(--primary); }
+    .container { max-width: 780px; margin: 0 auto; padding: 24px 16px 80px; }
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* Form */
+    .hero {
+      text-align: center;
+      padding: 32px 0 28px;
+    }
+    .hero h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 8px; }
+    .hero p { color: var(--muted); font-size: 15px; max-width: 420px; margin: 0 auto; }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 640px) { .services { grid-template-columns: 1fr; } }
+    .svc {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px 18px;
+      cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      text-align: left;
+    }
+    .svc:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(0,0,0,0.06); }
+    .svc h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+    .svc p { font-size: 13px; color: var(--muted); margin: 0; }
+    .svc .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-top: 12px;
+    }
+
     .panel {
       background: var(--white);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      margin-bottom: 16px;
+      border-radius: 8px;
+      margin-bottom: 14px;
     }
-    .panel-header {
-      padding: 12px 18px;
+    .panel-h {
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border);
       font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.4px;
       color: var(--muted);
     }
-    .panel-body { padding: 18px; }
+    .panel-b { padding: 16px; }
 
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-    .grid-3 { display: grid; grid-template-columns: 1fr 80px 100px; gap: 14px; }
-    @media (max-width: 560px) {
-      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 12px; font-weight: 500; color: var(--muted); margin-bottom: 4px; }
+    .field input, .field select, .field textarea {
+      width: 100%; height: 38px; padding: 0 10px;
+      border: 1px solid var(--border); border-radius: 4px;
+      font-size: 14px; font-family: inherit; outline: none;
     }
+    .field textarea { height: 80px; padding: 8px 10px; resize: vertical; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: var(--accent); box-shadow: 0 0 0 2px rgba(77,20,140,0.1);
+    }
+    .g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .g3 { display: grid; grid-template-columns: 1fr 70px 90px; gap: 12px; }
+    @media (max-width: 520px) { .g2, .g3 { grid-template-columns: 1fr; } }
 
-    .field label {
-      display: block;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--muted);
-      margin-bottom: 5px;
-    }
-    .field input {
-      width: 100%;
-      height: 38px;
-      padding: 0 11px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--primary);
-      outline: none;
-      background: var(--white);
-    }
-    .field input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(77,20,140,0.12); }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 8px;
-    }
     .btn {
-      height: 40px;
-      padding: 0 20px;
-      border-radius: 4px;
-      font-size: 13px;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      border: 1px solid transparent;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      height: 40px; padding: 0 18px; border-radius: 4px;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      cursor: pointer; border: 1px solid transparent;
+      display: inline-flex; align-items: center; justify-content: center;
     }
-    .btn-primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-    }
-    .btn-primary:hover { background: #3d1070; }
-    .btn-secondary {
-      background: var(--white);
-      color: var(--primary);
-      border-color: var(--border);
-    }
-    .btn-secondary:hover { background: #f5f5f5; }
+    .btn-p { background: var(--accent); color: #fff; }
+    .btn-p:hover { background: #3a0f6e; }
+    .btn-s { background: var(--white); color: var(--primary); border-color: var(--border); }
+    .btn-s:hover { background: #f5f5f5; }
     .btn-block { width: 100%; }
+    .actions { display: flex; gap: 10px; margin-top: 8px; }
+    .meta { font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px; }
 
-    .meta {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 12px;
-      text-align: center;
+    .toggle {
+      display: flex; background: #eee; border-radius: 6px; padding: 3px; margin-bottom: 16px;
     }
+    .toggle button {
+      flex: 1; height: 34px; border: none; background: transparent;
+      font-size: 13px; font-weight: 500; border-radius: 4px; cursor: pointer; color: var(--muted);
+    }
+    .toggle button.on { background: var(--white); color: var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
 
-    /* Label preview */
-    .label-preview {
-      background: var(--white);
-      border: 1px solid #999;
-      width: 4in;
-      max-width: 100%;
-      margin: 0 auto 20px;
-      font-family: Arial, Helvetica, sans-serif;
+    /* Label */
+    .label-box {
+      background: #fff; border: 1px solid #999; width: 4in; max-width: 100%;
+      margin: 0 auto 18px; font-family: Arial, sans-serif;
     }
-    .label-row {
-      display: flex;
-      border-bottom: 1.5px solid #000;
-    }
-    .label-from {
-      flex: 1;
-      padding: 10px 12px;
-      font-size: 11px;
-      line-height: 1.35;
-    }
-    .label-from .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.4px; margin-bottom: 3px; }
-    .label-shipper {
-      width: 105px;
-      padding: 8px 6px;
-      text-align: center;
-      border-left: 1px solid #ccc;
-      font-size: 9px;
-    }
-    .label-shipper .name {
-      font-weight: 800;
-      font-size: 11px;
-      margin-top: 4px;
-      line-height: 1.15;
-      color: #333;
-    }
-    .label-to-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
-      border-bottom: 1.5px solid #000;
-    }
-    .label-to { flex: 1; font-size: 12px; line-height: 1.35; }
-    .label-to .lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.4px; margin-bottom: 3px; }
-    .label-state {
-      width: 46px;
-      height: 46px;
-      border: 2.5px solid #000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: 900;
-      flex-shrink: 0;
-    }
-    .label-status {
-      margin: 8px 10px;
-      padding: 6px 10px;
-      background: #f8f8f8;
-      border: 1px solid #ddd;
-      font-size: 10px;
-      text-align: center;
-      color: #444;
-    }
-    .label-barcode {
-      padding: 10px 12px 14px;
-      text-align: center;
-    }
-    .label-tn {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0.8px;
-      margin-top: 5px;
-      font-family: "Courier New", monospace;
-    }
+    .lr { display: flex; border-bottom: 1.5px solid #000; }
+    .lf { flex: 1; padding: 10px 12px; font-size: 11px; line-height: 1.35; }
+    .lf .l { font-size: 9px; font-weight: 700; margin-bottom: 2px; }
+    .ls { width: 100px; padding: 8px; text-align: center; border-left: 1px solid #ccc; font-size: 9px; }
+    .ls .n { font-weight: 800; font-size: 11px; margin-top: 3px; line-height: 1.1; }
+    .lt { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-bottom: 1.5px solid #000; }
+    .lti { flex: 1; font-size: 12px; line-height: 1.35; }
+    .lti .l { font-size: 9px; font-weight: 700; margin-bottom: 2px; }
+    .lst { width: 44px; height: 44px; border: 2.5px solid #000; display: flex; align-items: center; justify-content: center; font-size: 17px; font-weight: 900; }
+    .lsts { margin: 8px 10px; padding: 6px; background: #f7f7f7; border: 1px solid #ddd; font-size: 10px; text-align: center; }
+    .lb { padding: 10px; text-align: center; }
+    .ltn { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; margin-top: 4px; font-family: "Courier New", monospace; }
 
-    /* Tracking */
-    .track-header {
-      margin-bottom: 24px;
-    }
-    .track-status {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-      margin-bottom: 4px;
-    }
-    .track-meta {
-      font-size: 13px;
-      color: var(--muted);
-    }
-    .track-tn {
-      font-family: "Courier New", monospace;
-      font-size: 13px;
-      color: var(--primary);
-      margin-top: 6px;
-    }
+    /* Track */
+    .th { margin-bottom: 20px; }
+    .ts { font-size: 20px; font-weight: 600; margin-bottom: 3px; }
+    .tm { font-size: 13px; color: var(--muted); }
+    .ttn { font-family: "Courier New", monospace; font-size: 13px; margin-top: 6px; }
+    .timeline { position: relative; padding-left: 26px; }
+    .timeline::before { content: ""; position: absolute; left: 5px; top: 6px; bottom: 10px; width: 2px; background: #e0e0e0; }
+    .tprog { position: absolute; left: 5px; top: 6px; width: 2px; background: var(--accent); z-index: 1; }
+    .ti { position: relative; padding-bottom: 18px; }
+    .ti:last-child { padding-bottom: 0; }
+    .td { position: absolute; left: -26px; top: 3px; width: 11px; height: 11px; border-radius: 50%; background: #d0d0d0; border: 2px solid #fff; box-shadow: 0 0 0 1.5px #d0d0d0; z-index: 2; }
+    .ti.done .td { background: var(--accent); box-shadow: 0 0 0 1.5px var(--accent); }
+    .ti.current .td { width: 13px; height: 13px; left: -27px; background: var(--accent); box-shadow: 0 0 0 3px rgba(77,20,140,0.2); }
+    .tit { font-size: 13px; font-weight: 600; }
+    .ti.current .tit { color: var(--accent); }
+    .til { font-size: 13px; color: #333; }
+    .titm { font-size: 12px; color: var(--muted); }
+    .ti.pending { opacity: 0.4; }
+    .dg { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 13px; }
+    .dg .k { color: var(--muted); }
+    .dg .v { font-weight: 500; text-align: right; }
 
-    .timeline {
-      position: relative;
-      padding-left: 28px;
+    .success-box {
+      background: #f0faf0; border: 1px solid #b7e0b7; border-radius: 6px;
+      padding: 16px; margin-bottom: 16px; font-size: 14px;
     }
-    .timeline::before {
-      content: "";
-      position: absolute;
-      left: 6px;
-      top: 8px;
-      bottom: 12px;
-      width: 2px;
-      background: #e0e0e0;
-    }
-    .tl-progress {
-      position: absolute;
-      left: 6px;
-      top: 8px;
-      width: 2px;
-      background: var(--accent);
-      z-index: 1;
-    }
-    .tl-item {
-      position: relative;
-      padding-bottom: 22px;
-    }
-    .tl-item:last-child { padding-bottom: 0; }
-    .tl-dot {
-      position: absolute;
-      left: -28px;
-      top: 3px;
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-      background: #d0d0d0;
-      border: 2px solid var(--white);
-      box-shadow: 0 0 0 1.5px #d0d0d0;
-      z-index: 2;
-    }
-    .tl-item.done .tl-dot {
-      background: var(--accent);
-      box-shadow: 0 0 0 1.5px var(--accent);
-    }
-    .tl-item.current .tl-dot {
-      width: 14px;
-      height: 14px;
-      left: -29px;
-      top: 2px;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px rgba(77,20,140,0.2);
-    }
-    .tl-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--primary);
-    }
-    .tl-item.current .tl-title { color: var(--accent); }
-    .tl-loc {
-      font-size: 13px;
-      color: #333;
-      margin-top: 1px;
-    }
-    .tl-time {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 1px;
-    }
-    .tl-item.pending { opacity: 0.45; }
+    .success-box strong { display: block; margin-bottom: 4px; }
 
-    .detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px 24px;
-      margin-top: 28px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      font-size: 13px;
-    }
-    .detail-grid .k { color: var(--muted); }
-    .detail-grid .v { font-weight: 500; text-align: right; }
-
-    /* Thermal print */
     @media print {
       @page { size: 4in 6in; margin: 0; }
-      html, body {
-        width: 4in; height: 6in;
-        margin: 0; padding: 0; background: #fff !important;
-      }
       header, .actions, .meta, .screen:not(#labelScreen) { display: none !important; }
       #labelScreen { display: block !important; }
-      .container { max-width: none; padding: 0; margin: 0; }
-      .label-preview {
-        width: 4in !important; height: 6in !important;
-        border: none !important; margin: 0 !important;
-        box-shadow: none !important;
-      }
+      .container { padding: 0; max-width: none; }
+      .label-box { width: 4in; border: none; margin: 0; }
     }
   </style>
 </head>
@@ -352,153 +197,195 @@
   <header>
     <div class="brand">Global<span>Express</span></div>
     <nav>
-      <button id="navCreate" class="active" onclick="go('create')">Create Label</button>
-      <button id="navLabel" onclick="go('label')">Label</button>
-      <button id="navTrack" onclick="goTrack()">Track</button>
+      <button id="nHome" class="active" onclick="go('home')">Home</button>
+      <button id="nShip" onclick="go('ship')">Ship</button>
+      <button id="nCar" onclick="go('car')">Sell Car</button>
+      <button id="nTrack" onclick="goTrack()">Track</button>
     </nav>
   </header>
 
   <div class="container">
 
-    <!-- CREATE -->
-    <div id="createScreen" class="screen active">
-      <div class="panel">
-        <div class="panel-header">Ship From</div>
-        <div class="panel-body">
-          <div class="field" style="margin-bottom:14px">
-            <label>Name / Company</label>
-            <input id="fromName" value="Global Express Hub">
-          </div>
-          <div class="field" style="margin-bottom:14px">
-            <label>Street Address</label>
-            <input id="fromStreet" value="1945 Cedar Avenue">
-          </div>
-          <div class="grid-3">
-            <div class="field">
-              <label>City</label>
-              <input id="fromCity" value="Houston">
-            </div>
-            <div class="field">
-              <label>State</label>
-              <input id="fromState" value="TX">
-            </div>
-            <div class="field">
-              <label>ZIP</label>
-              <input id="fromZip" value="77002">
-            </div>
-          </div>
+    <!-- HOME -->
+    <div id="homeScreen" class="screen active">
+      <div class="hero">
+        <h1>Shipping & AutoBuy</h1>
+        <p>Local and international labels. Real tracking. We buy cars across the USA.</p>
+      </div>
+      <div class="services">
+        <div class="svc" onclick="startShip('local')">
+          <h3>Ship Local</h3>
+          <p>Domestic labels with barcode and tracking. Start of route status.</p>
+          <span class="tag">Create label →</span>
+        </div>
+        <div class="svc" onclick="startShip('intl')">
+          <h3>Ship International</h3>
+          <p>Cross-border shipments. Customs-ready label and tracking.</p>
+          <span class="tag">Create label →</span>
+        </div>
+        <div class="svc" onclick="go('car')">
+          <h3>Sell Your Car (USA)</h3>
+          <p>Get an offer. We buy cars nationwide. Fast, transparent process.</p>
+          <span class="tag">Get offer →</span>
         </div>
       </div>
-
       <div class="panel">
-        <div class="panel-header">Ship To</div>
-        <div class="panel-body">
-          <div class="field" style="margin-bottom:14px">
-            <label>Recipient Name</label>
-            <input id="toName" value="Peggy Palmer">
-          </div>
-          <div class="field" style="margin-bottom:14px">
-            <label>Street Address</label>
-            <input id="toStreet" value="1201 Thomas Blvd">
-          </div>
-          <div class="grid-3" style="margin-bottom:14px">
-            <div class="field">
-              <label>City</label>
-              <input id="toCity" value="Elizabethton">
-            </div>
-            <div class="field">
-              <label>State</label>
-              <input id="toState" value="TN">
-            </div>
-            <div class="field">
-              <label>ZIP</label>
-              <input id="toZip" value="37643">
-            </div>
-          </div>
+        <div class="panel-h">Track a shipment</div>
+        <div class="panel-b">
           <div class="field">
-            <label>Phone</label>
-            <input id="toPhone" value="423.491-0319">
+            <label>Tracking number</label>
+            <input id="quickTn" value="11881-87236-402382053" placeholder="Enter tracking number">
+          </div>
+          <button class="btn btn-p btn-block" onclick="quickTrack()">Track</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHIP -->
+    <div id="shipScreen" class="screen">
+      <div class="toggle">
+        <button id="tLocal" class="on" onclick="setScope('local')">Local (Domestic)</button>
+        <button id="tIntl" onclick="setScope('intl')">International</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-h">Ship From</div>
+        <div class="panel-b">
+          <div class="field"><label>Name / Company</label><input id="fromName" value="Global Express Hub"></div>
+          <div class="field"><label>Street</label><input id="fromStreet" value="1945 Cedar Avenue"></div>
+          <div class="g3">
+            <div class="field"><label>City</label><input id="fromCity" value="Houston"></div>
+            <div class="field"><label>State</label><input id="fromState" value="TX"></div>
+            <div class="field"><label>ZIP</label><input id="fromZip" value="77002"></div>
+          </div>
+          <div class="field" id="fromCountryField" style="display:none">
+            <label>Country</label>
+            <input id="fromCountry" value="United States">
           </div>
         </div>
       </div>
 
-      <div class="actions">
-        <button class="btn btn-primary btn-block" onclick="generateLabel()">Generate Label</button>
+      <div class="panel">
+        <div class="panel-h">Ship To</div>
+        <div class="panel-b">
+          <div class="field"><label>Recipient</label><input id="toName" value="Peggy Palmer"></div>
+          <div class="field"><label>Street</label><input id="toStreet" value="1201 Thomas Blvd"></div>
+          <div class="g3">
+            <div class="field"><label>City</label><input id="toCity" value="Elizabethton"></div>
+            <div class="field"><label>State / Region</label><input id="toState" value="TN"></div>
+            <div class="field"><label>ZIP / Postal</label><input id="toZip" value="37643"></div>
+          </div>
+          <div class="field" id="toCountryField" style="display:none">
+            <label>Country</label>
+            <input id="toCountry" value="United States">
+          </div>
+          <div class="field"><label>Phone</label><input id="toPhone" value="423.491-0319"></div>
+        </div>
       </div>
-      <p class="meta">Tracking number is assigned and registered on the carrier network upon generation.</p>
+
+      <button class="btn btn-p btn-block" onclick="generateLabel()">Generate Label</button>
+      <p class="meta">Label is registered on the network. Status starts at Pre-Transit. No separate label fee.</p>
     </div>
 
     <!-- LABEL -->
     <div id="labelScreen" class="screen">
-      <div class="label-preview" id="labelCard">
-        <div class="label-row">
-          <div class="label-from" id="labelFrom">
-            <div class="lbl">FROM</div>
-            Global Express Hub<br>
-            1945 Cedar Avenue<br>
-            Houston, TX 77002
-          </div>
-          <div class="label-shipper">
-            <div style="color:#888;font-weight:600">SHIPPER</div>
-            <div class="name">GLOBAL<br>EXPRESS</div>
-          </div>
+      <div class="label-box">
+        <div class="lr">
+          <div class="lf" id="labelFrom"><div class="l">FROM</div>Global Express Hub<br>1945 Cedar Avenue<br>Houston, TX 77002</div>
+          <div class="ls"><div style="color:#888;font-weight:600">SHIPPER</div><div class="n">GLOBAL<br>EXPRESS</div></div>
         </div>
-        <div class="label-to-row">
-          <div class="label-to" id="labelTo">
-            <div class="lbl">TO</div>
-            Peggy Palmer<br>
-            1201 Thomas Blvd<br>
-            Elizabethton, TN 37643<br>
-            <span style="font-size:10px;color:#555">423.491-0319</span>
-          </div>
-          <div class="label-state" id="labelState">TN</div>
+        <div class="lt">
+          <div class="lti" id="labelTo"><div class="l">TO</div>Peggy Palmer<br>1201 Thomas Blvd<br>Elizabethton, TN 37643<br><span style="font-size:10px;color:#555">423.491-0319</span></div>
+          <div class="lst" id="labelState">TN</div>
         </div>
-        <div class="label-status" id="labelStatus">
-          LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP
-        </div>
-        <div class="label-barcode">
-          <svg id="mainBarcode"></svg>
-          <div class="label-tn" id="mainTrack">11881-87236-402382053</div>
-        </div>
+        <div class="lsts" id="labelStatus">LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP</div>
+        <div class="lb"><svg id="mainBarcode"></svg><div class="ltn" id="mainTrack">11881-87236-402382053</div></div>
       </div>
-
       <div class="actions" style="max-width:4in;margin:0 auto">
-        <button class="btn btn-secondary" style="flex:1" onclick="window.print()">Print 4×6</button>
-        <button class="btn btn-primary" style="flex:1" onclick="goTrack()">Track Shipment</button>
+        <button class="btn btn-s" style="flex:1" onclick="window.print()">Print 4×6</button>
+        <button class="btn btn-p" style="flex:1" onclick="goTrack()">Track</button>
       </div>
-      <div class="actions" style="max-width:4in;margin:12px auto 0">
-        <button class="btn btn-secondary btn-block" onclick="go('create')">Create Another Label</button>
+      <div class="actions" style="max-width:4in;margin:10px auto 0">
+        <button class="btn btn-s btn-block" onclick="go('ship')">Create another</button>
       </div>
     </div>
 
     <!-- TRACK -->
     <div id="trackScreen" class="screen">
       <div class="panel">
-        <div class="panel-body">
-          <div class="track-header">
-            <div class="track-status" id="trackStatus">Label Created</div>
-            <div class="track-meta" id="trackMeta">Pre-Transit · Awaiting carrier pickup</div>
-            <div class="track-tn" id="trackTn">11881-87236-402382053</div>
+        <div class="panel-b">
+          <div class="th">
+            <div class="ts" id="trackStatus">Label Created</div>
+            <div class="tm" id="trackMeta">Pre-Transit · Awaiting pickup</div>
+            <div class="ttn" id="trackTn">11881-87236-402382053</div>
           </div>
-
           <div class="timeline" id="timeline"></div>
-
-          <div class="detail-grid">
-            <div class="k">Service</div>
-            <div class="v" id="dService">Ground</div>
-            <div class="k">Origin</div>
-            <div class="v" id="dOrigin">Houston, TX</div>
-            <div class="k">Destination</div>
-            <div class="v" id="dDest">Elizabethton, TN</div>
-            <div class="k">Recipient</div>
-            <div class="v" id="dRecipient">Peggy Palmer</div>
+          <div class="dg">
+            <div class="k">Service</div><div class="v" id="dService">Ground</div>
+            <div class="k">Scope</div><div class="v" id="dScope">Local</div>
+            <div class="k">Origin</div><div class="v" id="dOrigin">Houston, TX</div>
+            <div class="k">Destination</div><div class="v" id="dDest">Elizabethton, TN</div>
+            <div class="k">Recipient</div><div class="v" id="dRecipient">Peggy Palmer</div>
           </div>
         </div>
       </div>
-
       <div class="actions">
-        <button class="btn btn-secondary" style="flex:1" onclick="go('label')">View Label</button>
-        <button class="btn btn-secondary" style="flex:1" onclick="go('create')">New Shipment</button>
+        <button class="btn btn-s" style="flex:1" onclick="go('label')">Label</button>
+        <button class="btn btn-s" style="flex:1" onclick="go('home')">Home</button>
+      </div>
+    </div>
+
+    <!-- CAR BUY -->
+    <div id="carScreen" class="screen">
+      <div class="hero" style="padding-top:8px">
+        <h1 style="font-size:22px">Sell Your Car — USA</h1>
+        <p>Submit details. We review and send an offer. Nationwide coverage.</p>
+      </div>
+
+      <div id="carForm">
+        <div class="panel">
+          <div class="panel-h">Vehicle</div>
+          <div class="panel-b">
+            <div class="g2">
+              <div class="field"><label>Year</label><input id="carYear" type="number" placeholder="2018" min="1990" max="2027"></div>
+              <div class="field"><label>Make</label><input id="carMake" placeholder="Toyota"></div>
+            </div>
+            <div class="g2">
+              <div class="field"><label>Model</label><input id="carModel" placeholder="Camry"></div>
+              <div class="field"><label>Mileage</label><input id="carMiles" type="number" placeholder="65000"></div>
+            </div>
+            <div class="field">
+              <label>Condition</label>
+              <select id="carCond">
+                <option value="excellent">Excellent</option>
+                <option value="good" selected>Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Needs work</option>
+              </select>
+            </div>
+            <div class="field"><label>ZIP Code</label><input id="carZip" placeholder="77002" maxlength="10"></div>
+            <div class="field"><label>Notes (optional)</label><textarea id="carNotes" placeholder="Accident history, title status, extras..."></textarea></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-h">Contact</div>
+          <div class="panel-b">
+            <div class="field"><label>Full name</label><input id="carName" placeholder="Your name"></div>
+            <div class="field"><label>Phone</label><input id="carPhone" placeholder="(555) 000-0000"></div>
+            <div class="field"><label>Email</label><input id="carEmail" type="email" placeholder="you@email.com"></div>
+          </div>
+        </div>
+        <button class="btn btn-p btn-block" onclick="submitCar()">Request offer</button>
+        <p class="meta">No obligation. We respond with an estimated range. Actual purchase subject to inspection and title.</p>
+      </div>
+
+      <div id="carDone" style="display:none">
+        <div class="success-box">
+          <strong>Request received</strong>
+          Your vehicle details have been submitted. A specialist will contact you with an offer range. Reference ID: <span id="carRef"></span>
+        </div>
+        <button class="btn btn-s btn-block" onclick="resetCar()">Submit another vehicle</button>
+        <button class="btn btn-s btn-block" style="margin-top:8px" onclick="go('home')">Back to home</button>
       </div>
     </div>
 
@@ -508,182 +395,174 @@
     const PERMANENT_TN = '11881-87236-402382053';
     let currentTN = PERMANENT_TN;
     let currentData = null;
+    let shipScope = 'local';
 
-    function go(screen) {
-      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-      document.getElementById(screen + 'Screen').classList.add('active');
+    function go(s) {
+      document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+      document.getElementById(s + 'Screen').classList.add('active');
       document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-      const map = { create: 'navCreate', label: 'navLabel', track: 'navTrack' };
-      if (map[screen]) document.getElementById(map[screen]).classList.add('active');
+      const map = { home: 'nHome', ship: 'nShip', car: 'nCar', track: 'nTrack', label: 'nShip' };
+      if (map[s]) document.getElementById(map[s]).classList.add('active');
       window.scrollTo(0, 0);
     }
 
-    function generateLabel() {
-      const fromName = document.getElementById('fromName').value.trim() || 'Shipper';
-      const fromStreet = document.getElementById('fromStreet').value.trim();
-      const fromCity = document.getElementById('fromCity').value.trim();
-      const fromState = document.getElementById('fromState').value.trim().toUpperCase();
-      const fromZip = document.getElementById('fromZip').value.trim();
+    function startShip(scope) {
+      setScope(scope);
+      go('ship');
+    }
 
-      const toName = document.getElementById('toName').value.trim() || 'Recipient';
-      const toStreet = document.getElementById('toStreet').value.trim();
-      const toCity = document.getElementById('toCity').value.trim();
-      const toState = document.getElementById('toState').value.trim().toUpperCase();
-      const toZip = document.getElementById('toZip').value.trim();
-      const toPhone = document.getElementById('toPhone').value.trim();
+    function setScope(scope) {
+      shipScope = scope;
+      document.getElementById('tLocal').classList.toggle('on', scope === 'local');
+      document.getElementById('tIntl').classList.toggle('on', scope === 'intl');
+      document.getElementById('fromCountryField').style.display = scope === 'intl' ? 'block' : 'none';
+      document.getElementById('toCountryField').style.display = scope === 'intl' ? 'block' : 'none';
+    }
+
+    function generateLabel() {
+      const fromName = val('fromName') || 'Shipper';
+      const fromStreet = val('fromStreet');
+      const fromCity = val('fromCity');
+      const fromState = val('fromState').toUpperCase();
+      const fromZip = val('fromZip');
+      const fromCountry = val('fromCountry') || 'United States';
+
+      const toName = val('toName') || 'Recipient';
+      const toStreet = val('toStreet');
+      const toCity = val('toCity');
+      const toState = val('toState').toUpperCase();
+      const toZip = val('toZip');
+      const toCountry = val('toCountry') || 'United States';
+      const toPhone = val('toPhone');
 
       const isPeggy = toName.toLowerCase().includes('peggy') && toName.toLowerCase().includes('palmer');
       currentTN = isPeggy ? PERMANENT_TN : randomTN();
 
       currentData = {
-        from: { name: fromName, street: fromStreet, city: fromCity, state: fromState, zip: fromZip },
-        to: { name: toName, street: toStreet, city: toCity, state: toState, zip: toZip, phone: toPhone },
-        tracking: currentTN
+        from: { name: fromName, street: fromStreet, city: fromCity, state: fromState, zip: fromZip, country: fromCountry },
+        to: { name: toName, street: toStreet, city: toCity, state: toState, zip: toZip, country: toCountry, phone: toPhone },
+        tracking: currentTN,
+        scope: shipScope
       };
 
-      document.getElementById('labelFrom').innerHTML =
-        `<div class="lbl">FROM</div>${fromName}<br>${fromStreet}<br>${fromCity}, ${fromState} ${fromZip}`;
+      const fromLine = shipScope === 'intl'
+        ? `${fromName}<br>${fromStreet}<br>${fromCity}, ${fromState} ${fromZip}<br>${fromCountry}`
+        : `${fromName}<br>${fromStreet}<br>${fromCity}, ${fromState} ${fromZip}`;
 
-      document.getElementById('labelTo').innerHTML =
-        `<div class="lbl">TO</div>${toName}<br>${toStreet}<br>${toCity}, ${toState} ${toZip}` +
-        (toPhone ? `<br><span style="font-size:10px;color:#555">${toPhone}</span>` : '');
+      const toLine = shipScope === 'intl'
+        ? `${toName}<br>${toStreet}<br>${toCity}, ${toState} ${toZip}<br>${toCountry}` + (toPhone ? `<br><span style="font-size:10px;color:#555">${toPhone}</span>` : '')
+        : `${toName}<br>${toStreet}<br>${toCity}, ${toState} ${toZip}` + (toPhone ? `<br><span style="font-size:10px;color:#555">${toPhone}</span>` : '');
 
-      document.getElementById('labelState').textContent = toState || '—';
-      document.getElementById('labelStatus').textContent =
-        'LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP';
+      document.getElementById('labelFrom').innerHTML = `<div class="l">FROM</div>${fromLine}`;
+      document.getElementById('labelTo').innerHTML = `<div class="l">TO</div>${toLine}`;
+      document.getElementById('labelState').textContent = toState || (shipScope === 'intl' ? 'INT' : '—');
+      document.getElementById('labelStatus').textContent = 'LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP';
 
-      const clean = currentTN.replace(/-/g, '');
-      JsBarcode('#mainBarcode', clean, {
-        format: 'CODE128',
-        width: 1.55,
-        height: 46,
-        displayValue: false,
-        margin: 0,
-        background: '#ffffff'
+      JsBarcode('#mainBarcode', currentTN.replace(/-/g, ''), {
+        format: 'CODE128', width: 1.55, height: 46, displayValue: false, margin: 0, background: '#fff'
       });
       document.getElementById('mainTrack').textContent = currentTN;
 
-      buildStartOfRouteTimeline();
+      buildTimeline();
       go('label');
     }
 
+    function val(id) { return (document.getElementById(id)?.value || '').trim(); }
+
     function randomTN() {
-      const a = Math.floor(10000 + Math.random() * 90000);
-      const b = Math.floor(10000 + Math.random() * 90000);
-      const c = Math.floor(100000000 + Math.random() * 900000000);
-      return `${a}-${b}-${c}`;
+      return `${Math.floor(10000+Math.random()*90000)}-${Math.floor(10000+Math.random()*90000)}-${Math.floor(100000000+Math.random()*900000000)}`;
     }
 
-    function buildStartOfRouteTimeline() {
+    function buildTimeline() {
       const d = currentData || {
         from: { city: 'Houston', state: 'TX' },
         to: { name: 'Peggy Palmer', city: 'Elizabethton', state: 'TN' },
-        tracking: currentTN
+        tracking: currentTN, scope: 'local'
       };
+      const created = new Date(Date.now() - 12 * 60000);
+      const fmt = dt => dt.toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit', hour: 'numeric', minute: '2-digit' });
 
-      const now = new Date();
-      const created = new Date(now - 12 * 60000); // 12 minutes ago
-
-      const fmt = (dt) => dt.toLocaleString('en-US', {
-        month: 'numeric', day: 'numeric', year: '2-digit',
-        hour: 'numeric', minute: '2-digit'
-      });
-
-      // Package is at the START of the route
       const events = [
-        {
-          title: 'Label Created',
-          loc: `${d.from.city || 'Houston'}, ${d.from.state || 'TX'} US`,
-          time: fmt(created),
-          state: 'current'
-        },
-        {
-          title: 'Shipment Information Received',
-          loc: 'Carrier network',
-          time: '',
-          state: 'done'
-        },
-        {
-          title: 'Awaiting Pickup',
-          loc: `${d.from.city || 'Houston'}, ${d.from.state || 'TX'}`,
-          time: '',
-          state: 'pending'
-        },
-        {
-          title: 'In Transit',
-          loc: '',
-          time: '',
-          state: 'pending'
-        },
-        {
-          title: 'Out for Delivery',
-          loc: `${d.to.city || 'Elizabethton'}, ${d.to.state || 'TN'}`,
-          time: '',
-          state: 'pending'
-        },
-        {
-          title: 'Delivered',
-          loc: `${d.to.city || 'Elizabethton'}, ${d.to.state || 'TN'} US`,
-          time: '',
-          state: 'pending'
-        }
+        { title: 'Label Created', loc: `${d.from.city}, ${d.from.state}` + (d.scope === 'intl' ? ` · ${d.from.country || 'US'}` : ' US'), time: fmt(created), state: 'current' },
+        { title: 'Shipment Information Received', loc: 'Carrier network', time: '', state: 'done' },
+        { title: 'Awaiting Pickup', loc: `${d.from.city}, ${d.from.state}`, time: '', state: 'pending' },
+        { title: 'In Transit', loc: '', time: '', state: 'pending' },
+        { title: 'Out for Delivery', loc: `${d.to.city}, ${d.to.state}`, time: '', state: 'pending' },
+        { title: 'Delivered', loc: `${d.to.city}, ${d.to.state}`, time: '', state: 'pending' }
       ];
 
       document.getElementById('trackStatus').textContent = 'Label Created';
       document.getElementById('trackMeta').textContent = 'Pre-Transit · Awaiting carrier pickup';
       document.getElementById('trackTn').textContent = currentTN;
-      document.getElementById('dOrigin').textContent = `${d.from.city || 'Houston'}, ${d.from.state || 'TX'}`;
-      document.getElementById('dDest').textContent = `${d.to.city || 'Elizabethton'}, ${d.to.state || 'TN'}`;
-      document.getElementById('dRecipient').textContent = d.to.name || 'Peggy Palmer';
+      document.getElementById('dService').textContent = d.scope === 'intl' ? 'International' : 'Ground';
+      document.getElementById('dScope').textContent = d.scope === 'intl' ? 'International' : 'Local';
+      document.getElementById('dOrigin').textContent = `${d.from.city}, ${d.from.state}`;
+      document.getElementById('dDest').textContent = `${d.to.city}, ${d.to.state}`;
+      document.getElementById('dRecipient').textContent = d.to.name || '—';
 
-      renderTimeline(events);
+      const tl = document.getElementById('timeline');
+      let html = '<div class="tprog" id="prog"></div>';
+      events.forEach(e => {
+        html += `<div class="ti ${e.state}"><div class="td"></div><div class="tit">${e.title}</div>${e.loc ? `<div class="til">${e.loc}</div>` : ''}${e.time ? `<div class="titm">${e.time}</div>` : ''}</div>`;
+      });
+      tl.innerHTML = html;
+      requestAnimationFrame(() => {
+        const c = tl.querySelector('.ti.current');
+        const p = document.getElementById('prog');
+        if (c && p) p.style.height = (c.offsetTop + 6) + 'px';
+      });
     }
 
     function goTrack() {
       if (!currentData) {
-        currentData = {
-          from: { city: 'Houston', state: 'TX' },
-          to: { name: 'Peggy Palmer', city: 'Elizabethton', state: 'TN' },
-          tracking: PERMANENT_TN
-        };
+        currentData = { from: { city: 'Houston', state: 'TX' }, to: { name: 'Peggy Palmer', city: 'Elizabethton', state: 'TN' }, tracking: PERMANENT_TN, scope: 'local' };
         currentTN = PERMANENT_TN;
       }
-      buildStartOfRouteTimeline();
+      buildTimeline();
       go('track');
-      document.getElementById('navTrack').classList.add('active');
-      document.getElementById('navCreate').classList.remove('active');
-      document.getElementById('navLabel').classList.remove('active');
+      document.getElementById('nTrack').classList.add('active');
+      document.getElementById('nHome').classList.remove('active');
+      document.getElementById('nShip').classList.remove('active');
     }
 
-    function renderTimeline(events) {
-      const tl = document.getElementById('timeline');
-      let html = '<div class="tl-progress" id="prog"></div>';
-      events.forEach(e => {
-        html += `
-          <div class="tl-item ${e.state}">
-            <div class="tl-dot"></div>
-            <div class="tl-title">${e.title}</div>
-            ${e.loc ? `<div class="tl-loc">${e.loc}</div>` : ''}
-            ${e.time ? `<div class="tl-time">${e.time}</div>` : ''}
-          </div>`;
-      });
-      tl.innerHTML = html;
-      requestAnimationFrame(() => {
-        const current = tl.querySelector('.tl-item.current');
-        const prog = document.getElementById('prog');
-        if (current && prog) prog.style.height = (current.offsetTop + 8) + 'px';
+    function quickTrack() {
+      const tn = val('quickTn') || PERMANENT_TN;
+      currentTN = tn;
+      currentData = {
+        from: { city: 'Houston', state: 'TX' },
+        to: { name: 'Peggy Palmer', city: 'Elizabethton', state: 'TN' },
+        tracking: tn, scope: 'local'
+      };
+      goTrack();
+    }
+
+    function submitCar() {
+      const year = val('carYear'), make = val('carMake'), model = val('carModel');
+      const name = val('carName'), phone = val('carPhone');
+      if (!year || !make || !model || !name || !phone) {
+        alert('Please fill year, make, model, name, and phone.');
+        return;
+      }
+      const ref = 'CAR-' + Date.now().toString(36).toUpperCase();
+      document.getElementById('carRef').textContent = ref;
+      document.getElementById('carForm').style.display = 'none';
+      document.getElementById('carDone').style.display = 'block';
+      // Lead stored client-side for now; wire to your backend/email later
+      console.log('Car lead', { ref, year, make, model, miles: val('carMiles'), cond: val('carCond'), zip: val('carZip'), notes: val('carNotes'), name, phone, email: val('carEmail') });
+    }
+
+    function resetCar() {
+      document.getElementById('carForm').style.display = 'block';
+      document.getElementById('carDone').style.display = 'none';
+      ['carYear','carMake','carModel','carMiles','carZip','carNotes','carName','carPhone','carEmail'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
       });
     }
 
-    // Ready barcode for permanent TN
     window.addEventListener('DOMContentLoaded', () => {
       JsBarcode('#mainBarcode', PERMANENT_TN.replace(/-/g, ''), {
-        format: 'CODE128',
-        width: 1.55,
-        height: 46,
-        displayValue: false,
-        margin: 0,
-        background: '#ffffff'
+        format: 'CODE128', width: 1.55, height: 46, displayValue: false, margin: 0, background: '#fff'
       });
     });
   </script>
