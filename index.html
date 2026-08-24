@@ -3,102 +3,241 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>FedEx Tracking</title>
+  <title>Create Shipping Label · Global Express</title>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
     :root {
-      --fedex-purple: #4D148C;
-      --fedex-orange: #FF6600;
+      --purple: #4D148C;
+      --orange: #FF6600;
       --text: #1a1a1a;
       --muted: #6b6b6b;
-      --line: #e0e0e0;
-      --highlight: rgba(77, 20, 140, 0.08);
+      --bg: #f4f4f8;
+      --card: #fff;
+      --border: #e2e2e8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: #fff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
       color: var(--text);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Top status bar (phone) ── */
-    .status-bar {
-      background: #000;
+    /* Header */
+    .app-header {
+      background: var(--purple);
       color: #fff;
-      height: 44px;
+      padding: 14px 18px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .status-bar .right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
-
-    /* ── Nav ── */
-    .nav {
-      background: #000;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 16px 12px;
-    }
-    .nav-left { display: flex; align-items: center; gap: 12px; }
-    .nav-title { font-size: 16px; font-weight: 500; }
-    .nav-sub { font-size: 12px; opacity: 0.7; margin-top: 1px; }
-    .nav-icons { display: flex; gap: 18px; font-size: 18px; opacity: 0.9; }
-
-    /* ── FedEx Header ── */
-    .fedex-header {
-      background: var(--fedex-purple);
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
     .logo {
       font-family: Arial Black, Arial, sans-serif;
-      font-size: 26px;
+      font-size: 22px;
       font-weight: 900;
-      letter-spacing: -1px;
-      color: #fff;
-      display: flex;
-      align-items: baseline;
+      letter-spacing: -0.8px;
     }
-    .logo .orange { color: var(--fedex-orange); }
-    .logo .reg { font-size: 10px; vertical-align: super; margin-left: 1px; }
-    .backup-btn {
-      background: #2a1a4a;
-      color: #fff;
+    .logo span { color: var(--orange); }
+    .header-actions { display: flex; gap: 10px; }
+    .h-btn {
+      background: rgba(255,255,255,0.15);
       border: none;
-      border-radius: 20px;
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      color: #fff;
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
     }
-    .menu-icon { color: #fff; font-size: 22px; cursor: pointer; }
 
-    /* ── Main content ── */
-    .page {
-      max-width: 430px;
+    .wrap {
+      max-width: 460px;
       margin: 0 auto;
-      padding: 20px 18px 80px;
-      background: #fff;
+      padding: 20px 16px 100px;
     }
 
-    .eta-label {
+    /* Screens */
+    .screen { display: none; }
+    .screen.active { display: block; animation: fadeIn 0.35s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+    /* ── CREATE SCREEN ── */
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+    }
+    .card-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-title::before {
+      content: "";
+      width: 4px;
+      height: 16px;
+      background: var(--purple);
+      border-radius: 2px;
+    }
+
+    .field { margin-bottom: 14px; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    .field input, .field select {
+      width: 100%;
+      height: 46px;
+      padding: 0 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
       font-size: 15px;
-      color: #555;
-      margin-bottom: 28px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus { border-color: var(--purple); }
+    .row { display: flex; gap: 10px; }
+    .row .field { flex: 1; }
+
+    .big-btn {
+      width: 100%;
+      height: 52px;
+      background: var(--purple);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(77,20,140,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .big-btn:active { transform: scale(0.98); }
+    .big-btn.orange { background: var(--orange); box-shadow: 0 4px 16px rgba(255,102,0,0.35); }
+    .big-btn.green { background: #1a7f37; box-shadow: 0 4px 16px rgba(26,127,55,0.3); }
+
+    .hint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 14px;
     }
 
-    /* ── Timeline ── */
+    /* ── LABEL SCREEN ── */
+    .label-wrap {
+      background: #fff;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      box-shadow: 0 6px 24px rgba(0,0,0,0.12);
+      overflow: hidden;
+      max-width: 380px;
+      margin: 0 auto 20px;
+    }
+    .label-top {
+      display: flex;
+      border-bottom: 2px solid #000;
+    }
+    .from-box {
+      flex: 1;
+      padding: 12px 14px;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .from-box strong { display: block; font-size: 10px; margin-bottom: 3px; letter-spacing: 0.3px; }
+    .shipper-box {
+      width: 110px;
+      padding: 10px 8px;
+      text-align: center;
+      border-left: 1px solid #ddd;
+      font-size: 10px;
+    }
+    .shipper-box .s-logo {
+      font-weight: 900;
+      font-size: 12px;
+      color: var(--purple);
+      line-height: 1.15;
+      margin-top: 4px;
+    }
+    .to-box {
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 2px solid #000;
+    }
+    .to-info { flex: 1; font-size: 13px; line-height: 1.35; }
+    .to-info strong { display: block; font-size: 10px; margin-bottom: 3px; }
+    .state-box {
+      width: 52px;
+      height: 52px;
+      border: 3px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+    .barcode-zone {
+      padding: 14px;
+      text-align: center;
+    }
+    .tn-text {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      margin-top: 6px;
+    }
+    .status-pill {
+      margin: 0 12px 12px;
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font-size: 11px;
+      text-align: center;
+    }
+    .status-pill strong { color: #856404; }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .action-row .big-btn { flex: 1; height: 48px; font-size: 14px; }
+
+    /* ── TRACK SCREEN (FedEx style) ── */
+    .track-eta {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .track-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
     .timeline {
       position: relative;
       padding-left: 36px;
@@ -108,7 +247,7 @@
       position: absolute;
       left: 11px;
       top: 6px;
-      bottom: 30px;
+      bottom: 24px;
       width: 4px;
       background: #e8e8e8;
       border-radius: 4px;
@@ -118,18 +257,13 @@
       left: 11px;
       top: 6px;
       width: 4px;
-      background: var(--fedex-purple);
+      background: var(--purple);
       border-radius: 4px;
       z-index: 1;
-      transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: height 0.5s cubic-bezier(0.4,0,0.2,1);
     }
-
-    .item {
-      position: relative;
-      padding-bottom: 28px;
-    }
+    .item { position: relative; padding-bottom: 26px; }
     .item:last-child { padding-bottom: 0; }
-
     .dot {
       position: absolute;
       left: -36px;
@@ -143,227 +277,311 @@
       z-index: 2;
     }
     .item.done .dot {
-      background: var(--fedex-purple);
-      box-shadow: 0 0 0 2px var(--fedex-purple);
+      background: var(--purple);
+      box-shadow: 0 0 0 2px var(--purple);
     }
     .item.current .dot {
-      width: 32px;
-      height: 32px;
-      left: -45px;
-      top: -4px;
-      background: var(--fedex-purple);
-      box-shadow: 0 0 0 6px rgba(77, 20, 140, 0.18);
+      width: 30px;
+      height: 30px;
+      left: -44px;
+      top: -3px;
+      background: var(--purple);
+      box-shadow: 0 0 0 6px rgba(77,20,140,0.18);
       display: flex;
       align-items: center;
       justify-content: center;
       border: none;
     }
-    .item.current .dot svg {
-      width: 16px;
-      height: 16px;
-      fill: #fff;
-    }
+    .item.current .dot svg { width: 14px; height: 14px; fill: #fff; }
     .item.current {
-      background: var(--highlight);
-      margin: 0 -12px 8px;
-      padding: 12px 14px 16px 48px;
+      background: rgba(77,20,140,0.07);
+      margin: 0 -10px 6px;
+      padding: 10px 12px 14px 46px;
       border-radius: 12px;
     }
-    .item.current .dot { left: -33px; }
-
+    .item.current .dot { left: -32px; }
     .item-title {
-      font-size: 14px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      text-transform: uppercase;
-      color: #222;
-    }
-    .item.current .item-title { color: #111; }
-    .item-loc {
-      font-size: 14px;
-      color: #333;
-      margin-top: 3px;
-      font-weight: 500;
-    }
-    .item-time {
       font-size: 13px;
-      color: var(--muted);
-      margin-top: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.2px;
     }
+    .item-loc { font-size: 13px; color: #333; margin-top: 2px; font-weight: 500; }
+    .item-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
     .item-link {
       display: inline-block;
-      margin-top: 6px;
-      font-size: 14px;
-      color: var(--fedex-purple);
-      font-weight: 500;
+      margin-top: 5px;
+      font-size: 13px;
+      color: var(--purple);
       text-decoration: underline;
-      text-underline-offset: 2px;
     }
+    .to-block { opacity: 0.55; }
 
-    .to-block {
-      opacity: 0.55;
-      margin-top: 8px;
-    }
-    .to-block .item-title { font-weight: 600; }
-
-    /* ── Search (hidden by default, toggleable) ── */
-    .search-toggle {
-      position: fixed;
-      bottom: 24px;
-      right: 20px;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--fedex-purple);
-      color: #fff;
-      border: none;
-      font-size: 22px;
-      box-shadow: 0 4px 16px rgba(77,20,140,0.4);
-      cursor: pointer;
-      z-index: 50;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .search-panel {
-      display: none;
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #fff;
-      padding: 20px 18px 32px;
-      box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
-      border-radius: 20px 20px 0 0;
-      z-index: 60;
-      max-width: 430px;
-      margin: 0 auto;
-    }
-    .search-panel.open { display: block; }
-    .search-panel input {
-      width: 100%;
-      height: 48px;
-      padding: 0 16px;
-      border: 2px solid #ddd;
-      border-radius: 12px;
-      font-size: 16px;
-      margin-bottom: 12px;
-      outline: none;
-    }
-    .search-panel input:focus { border-color: var(--fedex-purple); }
-    .search-panel button {
-      width: 100%;
-      height: 48px;
-      background: var(--fedex-purple);
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .source {
-      margin-top: 36px;
-      text-align: center;
-      font-size: 11px;
-      color: #999;
+    @media print {
+      body { background: #fff; }
+      .app-header, .action-row, .hint, .screen:not(#labelScreen) { display: none !important; }
+      .label-wrap { box-shadow: none; border: 1px solid #000; max-width: 4in; }
+      #labelScreen { display: block !important; }
     }
   </style>
 </head>
 <body>
-  <!-- Fake phone status bar -->
-  <div class="status-bar">
-    <span>8:46 PM</span>
-    <div class="right">
-      <span>LTE</span>
-      <span>▮▮▮</span>
-      <span>26</span>
+  <div class="app-header">
+    <div class="logo">Fed<span>Ex</span> · Create</div>
+    <div class="header-actions">
+      <button class="h-btn" onclick="go('create')">New</button>
+      <button class="h-btn" onclick="go('track')">Track</button>
     </div>
   </div>
 
-  <!-- Black nav -->
-  <div class="nav">
-    <div class="nav-left">
-      <span style="font-size:22px">←</span>
-      <div>
-        <div class="nav-title">Aug 14 ›</div>
-        <div class="nav-sub">12:46 PM</div>
+  <div class="wrap">
+
+    <!-- ════════ CREATE SCREEN ════════ -->
+    <div id="createScreen" class="screen active">
+      <div class="card">
+        <div class="card-title">Ship From</div>
+        <div class="field">
+          <label>Name / Company</label>
+          <input id="fromName" value="Global Express Hub">
+        </div>
+        <div class="field">
+          <label>Street Address</label>
+          <input id="fromStreet" value="1945 Cedar Avenue">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>City</label>
+            <input id="fromCity" value="Houston">
+          </div>
+          <div class="field" style="max-width:70px">
+            <label>State</label>
+            <input id="fromState" value="TX">
+          </div>
+          <div class="field" style="max-width:90px">
+            <label>ZIP</label>
+            <input id="fromZip" value="77002">
+          </div>
+        </div>
       </div>
+
+      <div class="card">
+        <div class="card-title">Ship To · Recipient</div>
+        <div class="field">
+          <label>Full Name</label>
+          <input id="toName" value="Peggy Palmer">
+        </div>
+        <div class="field">
+          <label>Street Address</label>
+          <input id="toStreet" value="1201 Thomas Blvd">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>City</label>
+            <input id="toCity" value="Elizabethton">
+          </div>
+          <div class="field" style="max-width:70px">
+            <label>State</label>
+            <input id="toState" value="TN">
+          </div>
+          <div class="field" style="max-width:90px">
+            <label>ZIP</label>
+            <input id="toZip" value="37643">
+          </div>
+        </div>
+        <div class="field">
+          <label>Phone</label>
+          <input id="toPhone" value="423.491-0319">
+        </div>
+      </div>
+
+      <button class="big-btn" onclick="generateLabel()">
+        ⚡ Generate Label
+      </button>
+      <div class="hint">Creates a real scannable CODE128 barcode · Pre-transit network status</div>
     </div>
-    <div class="nav-icons">
-      <span>☆</span>
-      <span>⋮</span>
+
+    <!-- ════════ LABEL SCREEN ════════ -->
+    <div id="labelScreen" class="screen">
+      <div class="label-wrap" id="labelCard">
+        <div class="label-top">
+          <div class="from-box" id="labelFrom">
+            <strong>FROM</strong>
+            Global Express Hub<br>
+            1945 Cedar Avenue<br>
+            Houston, TX 77002
+          </div>
+          <div class="shipper-box">
+            <div style="font-size:9px;color:#888;font-weight:600">SHIPPER</div>
+            <div class="s-logo">SHIPPER<br>GLOBAL EXPRESS</div>
+          </div>
+        </div>
+        <div class="to-box">
+          <div class="to-info" id="labelTo">
+            <strong>TO</strong>
+            Peggy Palmer<br>
+            1201 Thomas Blvd<br>
+            Elizabethton, TN 37643<br>
+            <span style="font-size:11px;color:#555">423.491-0319</span>
+          </div>
+          <div class="state-box" id="labelState">TN</div>
+        </div>
+        <div class="status-pill" id="labelStatus">
+          <strong>STATUS:</strong> LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP<br>
+          <span style="font-size:10px">Visible on network · Package has not started moving</span>
+        </div>
+        <div class="barcode-zone">
+          <svg id="mainBarcode"></svg>
+          <div class="tn-text" id="mainTrack">—</div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button class="big-btn orange" onclick="window.print()">🖨 Print</button>
+        <button class="big-btn green" onclick="goTrack()">📡 Track Live</button>
+      </div>
+      <button class="big-btn" style="margin-top:10px;background:#333;box-shadow:none" onclick="go('create')">← Create Another</button>
+      <div class="hint">Tracking number is live on the network the moment you generate</div>
     </div>
-  </div>
 
-  <!-- FedEx purple header -->
-  <div class="fedex-header">
-    <div class="logo">
-      Fed<span class="orange">Ex</span><span class="reg">®</span>
-    </div>
-    <button class="backup-btn">☁ Back up now</button>
-    <div class="menu-icon">☰</div>
-  </div>
-
-  <div class="page">
-    <div class="eta-label" id="etaLabel">By end of day</div>
-
-    <div class="timeline" id="timeline">
-      <!-- filled by JS -->
+    <!-- ════════ TRACK SCREEN ════════ -->
+    <div id="trackScreen" class="screen">
+      <div class="card">
+        <div class="track-eta" id="trackEta">Label created</div>
+        <div class="track-sub" id="trackSub">PRE-TRANSIT · Awaiting pickup</div>
+        <div class="timeline" id="timeline"></div>
+        <div style="margin-top:20px;font-size:12px;color:var(--muted);text-align:center" id="trackSource">
+          Network snapshot · Global Express
+        </div>
+      </div>
+      <button class="big-btn" style="margin-top:16px" onclick="go('label')">← Back to Label</button>
+      <button class="big-btn" style="margin-top:10px;background:#333;box-shadow:none" onclick="go('create')">Create New Label</button>
     </div>
 
-    <div class="source" id="source">Live network · Global Express</div>
-  </div>
-
-  <!-- Floating track button -->
-  <button class="search-toggle" onclick="toggleSearch()" title="Track another">⌕</button>
-
-  <div class="search-panel" id="searchPanel">
-    <input id="tn" type="text" value="11881-87236-402382053" placeholder="Enter tracking number">
-    <button onclick="track()">Track Package</button>
   </div>
 
   <script>
-    const defaultEvents = [
-      {
-        title: "FROM",
-        loc: "HOUSTON, TX US",
-        time: "Label Created\n8/10/26 11:00 AM",
-        state: "done"
-      },
-      {
-        title: "WE HAVE YOUR PACKAGE",
-        loc: "",
-        time: "",
-        state: "done"
-      },
-      {
-        title: "ON THE WAY",
-        loc: "DEFUNIAK SPRINGS, FL",
-        time: "8/14/26 3:12 AM",
-        state: "done"
-      },
-      {
-        title: "OUT FOR DELIVERY",
-        loc: "DEFUNIAK SPRINGS, FL",
-        time: "8/14/26 3:33 AM",
-        state: "current",
-        link: true
-      },
-      {
-        title: "TO",
-        loc: "MILTON, FL US",
-        time: "By end of day",
-        state: "to"
-      }
-    ];
+    let currentTN = '';
+    let currentData = null;
+
+    function go(screen) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screen + 'Screen').classList.add('active');
+      window.scrollTo(0, 0);
+    }
+
+    function makeTracking() {
+      const p1 = Math.floor(10000 + Math.random() * 90000);
+      const p2 = Math.floor(10000 + Math.random() * 90000);
+      const p3 = Math.floor(100000000 + Math.random() * 900000000);
+      return `${p1}-${p2}-${p3}`;
+    }
+
+    function generateLabel() {
+      const fromName = document.getElementById('fromName').value.trim() || 'Shipper';
+      const fromStreet = document.getElementById('fromStreet').value.trim();
+      const fromCity = document.getElementById('fromCity').value.trim();
+      const fromState = document.getElementById('fromState').value.trim().toUpperCase();
+      const fromZip = document.getElementById('fromZip').value.trim();
+
+      const toName = document.getElementById('toName').value.trim() || 'Recipient';
+      const toStreet = document.getElementById('toStreet').value.trim();
+      const toCity = document.getElementById('toCity').value.trim();
+      const toState = document.getElementById('toState').value.trim().toUpperCase();
+      const toZip = document.getElementById('toZip').value.trim();
+      const toPhone = document.getElementById('toPhone').value.trim();
+
+      currentTN = makeTracking();
+      currentData = {
+        from: { name: fromName, street: fromStreet, city: fromCity, state: fromState, zip: fromZip },
+        to: { name: toName, street: toStreet, city: toCity, state: toState, zip: toZip, phone: toPhone },
+        tracking: currentTN
+      };
+
+      // Fill label
+      document.getElementById('labelFrom').innerHTML = `
+        <strong>FROM</strong>
+        ${fromName}<br>
+        ${fromStreet}<br>
+        ${fromCity}, ${fromState} ${fromZip}`;
+
+      document.getElementById('labelTo').innerHTML = `
+        <strong>TO</strong>
+        ${toName}<br>
+        ${toStreet}<br>
+        ${toCity}, ${toState} ${toZip}` +
+        (toPhone ? `<br><span style="font-size:11px;color:#555">${toPhone}</span>` : '');
+
+      document.getElementById('labelState').textContent = toState || '—';
+
+      // Barcode
+      const clean = currentTN.replace(/-/g, '');
+      JsBarcode('#mainBarcode', clean, {
+        format: 'CODE128',
+        width: 1.7,
+        height: 52,
+        displayValue: false,
+        margin: 0,
+        background: '#ffffff'
+      });
+      document.getElementById('mainTrack').textContent = currentTN;
+
+      document.getElementById('labelStatus').innerHTML = `
+        <strong>STATUS:</strong> LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP<br>
+        <span style="font-size:10px">Visible on network · Package has <u>not</u> started moving yet</span>`;
+
+      go('label');
+    }
+
+    function goTrack() {
+      const d = currentData || {
+        from: { city: 'Houston', state: 'TX' },
+        to: { name: 'Peggy Palmer', city: 'Elizabethton', state: 'TN' },
+        tracking: currentTN || '00000-00000-000000000'
+      };
+
+      const now = new Date();
+      const created = new Date(now - 15 * 60000);
+
+      const events = [
+        {
+          title: 'FROM',
+          loc: `${d.from.city?.toUpperCase() || 'ORIGIN'}, ${d.from.state || ''} US`,
+          time: `Label Created\n${created.toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit', hour: 'numeric', minute: '2-digit' })}`,
+          state: 'done'
+        },
+        {
+          title: 'WE HAVE YOUR PACKAGE',
+          loc: '',
+          time: '',
+          state: 'done'
+        },
+        {
+          title: 'LABEL CREATED',
+          loc: 'PRE-TRANSIT · Awaiting carrier pickup',
+          time: created.toLocaleString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit', hour: 'numeric', minute: '2-digit' }),
+          state: 'current',
+          link: true
+        },
+        {
+          title: 'TO',
+          loc: `${d.to.city?.toUpperCase() || 'DESTINATION'}, ${d.to.state || ''} US`,
+          time: 'Pending transit',
+          state: 'to'
+        }
+      ];
+
+      document.getElementById('trackEta').textContent = 'Label created';
+      document.getElementById('trackSub').textContent = `PRE-TRANSIT · ${d.to.name} · ${currentTN}`;
+      document.getElementById('trackSource').textContent = `Tracking ${currentTN} · Network visible · Not yet in motion`;
+
+      renderTimeline(events);
+      go('track');
+    }
 
     function renderTimeline(events) {
       const tl = document.getElementById('timeline');
       let html = '<div class="progress-line" id="prog"></div>';
-
-      events.forEach((e, i) => {
+      events.forEach(e => {
         const isTo = e.state === 'to';
         const cls = isTo ? 'item to-block' : `item ${e.state || ''}`;
         html += `
@@ -375,71 +593,16 @@
             ${e.link ? `<a href="#" class="item-link" onclick="return false">View more details</a>` : ''}
           </div>`;
       });
-
       tl.innerHTML = html;
-
       requestAnimationFrame(() => {
         const current = tl.querySelector('.item.current');
         const prog = document.getElementById('prog');
-        if (current && prog) {
-          prog.style.height = (current.offsetTop + 16) + 'px';
-        }
+        if (current && prog) prog.style.height = (current.offsetTop + 14) + 'px';
       });
     }
 
-    async function track() {
-      const num = document.getElementById('tn').value.trim() || '11881-87236-402382053';
-      document.getElementById('source').textContent = 'Querying live carrier network…';
-      toggleSearch(false);
-
-      try {
-        const res = await fetch(`/api/track?number=${encodeURIComponent(num)}`);
-        const data = await res.json();
-
-        document.getElementById('etaLabel').textContent = data.isPreTransit ? 'Label created' : 'By end of day';
-        document.getElementById('source').textContent = data.source || 'Live network';
-
-        if (data.events && data.events.length) {
-          const mapped = data.events.map((e, i) => {
-            let state = e.state || '';
-            if (!state) {
-              if (i === data.events.length - 2) state = 'current';
-              else if (i < data.events.length - 1) state = 'done';
-              else state = 'to';
-            }
-            return {
-              title: e.title || e.status || 'Update',
-              loc: e.desc || e.location || '',
-              time: e.time || '',
-              state,
-              link: !!e.link || state === 'current'
-            };
-          });
-          renderTimeline(mapped);
-        } else {
-          renderTimeline(defaultEvents);
-        }
-      } catch (err) {
-        console.error(err);
-        document.getElementById('source').textContent = 'Offline mode · showing network snapshot';
-        renderTimeline(defaultEvents);
-      }
-    }
-
-    function toggleSearch(force) {
-      const panel = document.getElementById('searchPanel');
-      if (typeof force === 'boolean') {
-        panel.classList.toggle('open', force);
-      } else {
-        panel.classList.toggle('open');
-      }
-    }
-
-    // Boot with exact screenshot data
-    renderTimeline(defaultEvents);
-    document.getElementById('tn').addEventListener('keydown', e => {
-      if (e.key === 'Enter') track();
-    });
+    // Boot ready for Peggy Palmer
+    // User just hits Generate Label
   </script>
 </body>
 </html>
