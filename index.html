@@ -8,7 +8,7 @@
   <style>
     :root { --primary:#111; --accent:#4D148C; --border:#e0e0e0; --muted:#666; --bg:#f5f5f5; --white:#fff; }
     * { box-sizing:border-box; margin:0; padding:0; }
-    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--bg); color:var(--primary); min-height:100vh; font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--bg); color:var(--primary); min-height:100vh; font-size:14px; line-height:1.5; }
     header { background:var(--white); border-bottom:1px solid var(--border); height:56px; padding:0 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
     .brand { font-size:16px; font-weight:700; } .brand span { color:var(--accent); }
     nav { display:flex; gap:2px; flex-wrap:wrap; }
@@ -16,36 +16,31 @@
     nav button:hover, nav button.active { background:#eee; color:var(--primary); }
     .container { max-width:780px; margin:0 auto; padding:24px 16px 80px; }
     .screen { display:none; } .screen.active { display:block; }
-    .hero { text-align:center; padding:32px 0 28px; }
-    .hero h1 { font-size:26px; font-weight:700; letter-spacing:-0.4px; margin-bottom:8px; }
-    .hero p { color:var(--muted); font-size:15px; max-width:420px; margin:0 auto; }
-    .services { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:28px; }
+    .hero { text-align:center; padding:28px 0 24px; }
+    .hero h1 { font-size:24px; font-weight:700; margin-bottom:8px; }
+    .hero p { color:var(--muted); font-size:14px; max-width:440px; margin:0 auto; }
+    .services { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
     @media (max-width:640px) { .services { grid-template-columns:1fr; } }
-    .svc { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:22px 18px; cursor:pointer; text-align:left; }
-    .svc:hover { border-color:var(--accent); box-shadow:0 4px 16px rgba(0,0,0,0.06); }
-    .svc h3 { font-size:15px; font-weight:600; margin-bottom:6px; }
-    .svc p { font-size:13px; color:var(--muted); margin:0; }
-    .svc .tag { display:inline-block; font-size:11px; font-weight:600; color:var(--accent); margin-top:12px; }
+    .svc { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:20px; cursor:pointer; }
+    .svc:hover { border-color:var(--accent); }
+    .svc h3 { font-size:15px; margin-bottom:6px; } .svc p { font-size:13px; color:var(--muted); } .svc .tag { font-size:11px; font-weight:600; color:var(--accent); margin-top:10px; display:inline-block; }
     .panel { background:var(--white); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; }
     .panel-h { padding:12px 16px; border-bottom:1px solid var(--border); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; color:var(--muted); }
     .panel-b { padding:16px; }
     .field { margin-bottom:12px; }
     .field label { display:block; font-size:12px; font-weight:500; color:var(--muted); margin-bottom:4px; }
     .field input, .field select, .field textarea { width:100%; height:38px; padding:0 10px; border:1px solid var(--border); border-radius:4px; font-size:14px; font-family:inherit; outline:none; }
-    .field textarea { height:80px; padding:8px 10px; resize:vertical; }
-    .field input:focus, .field select:focus { border-color:var(--accent); box-shadow:0 0 0 2px rgba(77,20,140,0.1); }
+    .field textarea { height:72px; padding:8px 10px; }
     .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .g3 { display:grid; grid-template-columns:1fr 70px 90px; gap:12px; }
     .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
     @media (max-width:520px) { .g2,.g3,.g4 { grid-template-columns:1fr; } }
-    .btn { height:40px; padding:0 18px; border-radius:4px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; border:1px solid transparent; display:inline-flex; align-items:center; justify-content:center; }
-    .btn-p { background:var(--accent); color:#fff; } .btn-p:hover { background:#3a0f6e; }
-    .btn-s { background:var(--white); color:var(--primary); border-color:var(--border); }
-    .btn-s:hover { background:#f5f5f5; }
+    .btn { height:40px; padding:0 16px; border-radius:4px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; border:1px solid transparent; display:inline-flex; align-items:center; justify-content:center; }
+    .btn-p { background:var(--accent); color:#fff; } .btn-s { background:var(--white); color:var(--primary); border-color:var(--border); }
     .btn-block { width:100%; } .btn:disabled { opacity:0.55; cursor:not-allowed; }
     .actions { display:flex; gap:10px; margin-top:8px; }
-    .meta { font-size:12px; color:var(--muted); text-align:center; margin-top:12px; }
-    .toggle { display:flex; background:#eee; border-radius:6px; padding:3px; margin-bottom:16px; }
+    .meta { font-size:12px; color:var(--muted); text-align:center; margin-top:10px; }
+    .toggle { display:flex; background:#eee; border-radius:6px; padding:3px; margin-bottom:14px; }
     .toggle button { flex:1; height:34px; border:none; background:transparent; font-size:13px; font-weight:500; border-radius:4px; cursor:pointer; color:var(--muted); }
     .toggle button.on { background:var(--white); color:var(--primary); box-shadow:0 1px 3px rgba(0,0,0,0.08); }
     .rate-row { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); gap:12px; }
@@ -54,7 +49,7 @@
     .rate-row input { width:auto; height:auto; }
     .rate-price { font-weight:700; white-space:nowrap; }
     .err { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:10px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; display:none; }
-    .label-box { background:#fff; border:1px solid #999; width:4in; max-width:100%; margin:0 auto 18px; font-family:Arial,sans-serif; }
+    .label-box { background:#fff; border:1px solid #999; width:4in; max-width:100%; margin:0 auto 16px; font-family:Arial,sans-serif; }
     .lr { display:flex; border-bottom:1.5px solid #000; }
     .lf { flex:1; padding:10px 12px; font-size:11px; line-height:1.35; }
     .lf .l { font-size:9px; font-weight:700; margin-bottom:2px; }
@@ -67,26 +62,24 @@
     .lsts { margin:8px 10px; padding:6px; background:#f7f7f7; border:1px solid #ddd; font-size:10px; text-align:center; }
     .lb { padding:10px; text-align:center; }
     .ltn { font-size:12px; font-weight:700; letter-spacing:0.6px; margin-top:4px; font-family:"Courier New",monospace; }
-    .th { margin-bottom:20px; } .ts { font-size:20px; font-weight:600; margin-bottom:3px; }
-    .tm { font-size:13px; color:var(--muted); } .ttn { font-family:"Courier New",monospace; font-size:13px; margin-top:6px; }
+    .th { margin-bottom:18px; } .ts { font-size:20px; font-weight:600; } .tm { font-size:13px; color:var(--muted); } .ttn { font-family:"Courier New",monospace; font-size:13px; margin-top:6px; }
     .timeline { position:relative; padding-left:26px; }
     .timeline::before { content:""; position:absolute; left:5px; top:6px; bottom:10px; width:2px; background:#e0e0e0; }
     .tprog { position:absolute; left:5px; top:6px; width:2px; background:var(--accent); z-index:1; }
-    .ti { position:relative; padding-bottom:18px; } .ti:last-child { padding-bottom:0; }
+    .ti { position:relative; padding-bottom:16px; }
     .td { position:absolute; left:-26px; top:3px; width:11px; height:11px; border-radius:50%; background:#d0d0d0; border:2px solid #fff; box-shadow:0 0 0 1.5px #d0d0d0; z-index:2; }
     .ti.done .td { background:var(--accent); box-shadow:0 0 0 1.5px var(--accent); }
     .ti.current .td { width:13px; height:13px; left:-27px; background:var(--accent); box-shadow:0 0 0 3px rgba(77,20,140,0.2); }
     .tit { font-size:13px; font-weight:600; } .ti.current .tit { color:var(--accent); }
-    .til { font-size:13px; color:#333; } .titm { font-size:12px; color:var(--muted); } .ti.pending { opacity:0.4; }
-    .dg { display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; margin-top:22px; padding-top:16px; border-top:1px solid var(--border); font-size:13px; }
+    .til { font-size:13px; } .titm { font-size:12px; color:var(--muted); } .ti.pending { opacity:0.4; }
+    .dg { display:grid; grid-template-columns:1fr 1fr; gap:10px 20px; margin-top:20px; padding-top:14px; border-top:1px solid var(--border); font-size:13px; }
     .dg .k { color:var(--muted); } .dg .v { font-weight:500; text-align:right; }
-    .success-box { background:#f0faf0; border:1px solid #b7e0b7; border-radius:6px; padding:16px; margin-bottom:16px; font-size:14px; }
-    .success-box strong { display:block; margin-bottom:4px; }
+    .success-box { background:#f0faf0; border:1px solid #b7e0b7; border-radius:6px; padding:14px; margin-bottom:14px; }
+    #upsLabelImg { max-width:100%; margin:12px auto; display:none; }
     @media print {
       @page { size:4in 6in; margin:0; }
       header,.actions,.meta,.screen:not(#labelScreen) { display:none !important; }
       #labelScreen { display:block !important; }
-      .container { padding:0; max-width:none; }
       .label-box { width:4in; border:none; margin:0; }
     }
   </style>
@@ -101,83 +94,65 @@
       <button id="nTrack" onclick="goTrack()">Track</button>
     </nav>
   </header>
-
   <div class="container">
     <div id="homeScreen" class="screen active">
       <div class="hero">
         <h1>Shipping & AutoBuy</h1>
-        <p>Local and international via EasyPost. Real rates, labels, and tracking. We buy cars in the USA.</p>
+        <p>EasyPost multi-carrier + direct UPS rates & labels. Local and international. USA car offers.</p>
       </div>
       <div class="services">
-        <div class="svc" onclick="startShip('local')"><h3>Ship Local</h3><p>US domestic rates and labels.</p><span class="tag">Get rates →</span></div>
-        <div class="svc" onclick="startShip('intl')"><h3>Ship International</h3><p>Cross-border with customs support.</p><span class="tag">Get rates →</span></div>
-        <div class="svc" onclick="go('car')"><h3>Sell Your Car (USA)</h3><p>Nationwide car purchase offers.</p><span class="tag">Get offer →</span></div>
+        <div class="svc" onclick="startShip('local')"><h3>Ship Local</h3><p>Domestic rates via EasyPost or UPS.</p><span class="tag">Get rates →</span></div>
+        <div class="svc" onclick="startShip('intl')"><h3>Ship International</h3><p>Cross-border rating and labels.</p><span class="tag">Get rates →</span></div>
+        <div class="svc" onclick="go('car')"><h3>Sell Your Car (USA)</h3><p>Nationwide purchase requests.</p><span class="tag">Get offer →</span></div>
       </div>
-      <div class="panel">
-        <div class="panel-h">Track a shipment</div>
-        <div class="panel-b">
-          <div class="field"><label>Tracking number</label><input id="quickTn" placeholder="Carrier tracking code"></div>
-          <button class="btn btn-p btn-block" onclick="quickTrack()">Track</button>
-        </div>
-      </div>
+      <div class="panel"><div class="panel-h">Track</div><div class="panel-b">
+        <div class="field"><label>Tracking number</label><input id="quickTn" placeholder="UPS / carrier tracking code"></div>
+        <button class="btn btn-p btn-block" onclick="quickTrack()">Track</button>
+      </div></div>
     </div>
 
     <div id="shipScreen" class="screen">
       <div class="toggle">
-        <button id="tLocal" class="on" onclick="setScope('local')">Local (Domestic)</button>
+        <button id="tLocal" class="on" onclick="setScope('local')">Local</button>
         <button id="tIntl" onclick="setScope('intl')">International</button>
       </div>
       <div id="shipErr" class="err"></div>
-
-      <div class="panel">
-        <div class="panel-h">Ship From</div>
-        <div class="panel-b">
-          <div class="field"><label>Name / Company</label><input id="fromName" value="Global Express Hub"></div>
-          <div class="field"><label>Street</label><input id="fromStreet" value="1945 Cedar Avenue"></div>
-          <div class="g3">
-            <div class="field"><label>City</label><input id="fromCity" value="Houston"></div>
-            <div class="field"><label>State</label><input id="fromState" value="TX"></div>
-            <div class="field"><label>ZIP</label><input id="fromZip" value="77002"></div>
-          </div>
-          <div class="field" id="fromCountryField" style="display:none"><label>Country code</label><input id="fromCountry" value="US"></div>
+      <div class="panel"><div class="panel-h">Ship From</div><div class="panel-b">
+        <div class="field"><label>Name</label><input id="fromName" value="Global Express Hub"></div>
+        <div class="field"><label>Street</label><input id="fromStreet" value="1945 Cedar Avenue"></div>
+        <div class="g3">
+          <div class="field"><label>City</label><input id="fromCity" value="Houston"></div>
+          <div class="field"><label>State</label><input id="fromState" value="TX"></div>
+          <div class="field"><label>ZIP</label><input id="fromZip" value="77002"></div>
         </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-h">Ship To</div>
-        <div class="panel-b">
-          <div class="field"><label>Recipient</label><input id="toName" value="Peggy Palmer"></div>
-          <div class="field"><label>Street</label><input id="toStreet" value="1201 Thomas Blvd"></div>
-          <div class="g3">
-            <div class="field"><label>City</label><input id="toCity" value="Elizabethton"></div>
-            <div class="field"><label>State</label><input id="toState" value="TN"></div>
-            <div class="field"><label>ZIP</label><input id="toZip" value="37643"></div>
-          </div>
-          <div class="field" id="toCountryField" style="display:none"><label>Country code</label><input id="toCountry" value="US"></div>
-          <div class="field"><label>Phone</label><input id="toPhone" value="4234910319"></div>
+        <div class="field" id="fromCountryField" style="display:none"><label>Country</label><input id="fromCountry" value="US"></div>
+      </div></div>
+      <div class="panel"><div class="panel-h">Ship To</div><div class="panel-b">
+        <div class="field"><label>Recipient</label><input id="toName" value="Peggy Palmer"></div>
+        <div class="field"><label>Street</label><input id="toStreet" value="1201 Thomas Blvd"></div>
+        <div class="g3">
+          <div class="field"><label>City</label><input id="toCity" value="Elizabethton"></div>
+          <div class="field"><label>State</label><input id="toState" value="TN"></div>
+          <div class="field"><label>ZIP</label><input id="toZip" value="37643"></div>
         </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-h">Package (inches / ounces)</div>
-        <div class="panel-b">
-          <div class="g4">
-            <div class="field"><label>Length</label><input id="pLen" type="number" value="10"></div>
-            <div class="field"><label>Width</label><input id="pWid" type="number" value="8"></div>
-            <div class="field"><label>Height</label><input id="pHgt" type="number" value="4"></div>
-            <div class="field"><label>Weight (oz)</label><input id="pWgt" type="number" value="16"></div>
-          </div>
+        <div class="field" id="toCountryField" style="display:none"><label>Country</label><input id="toCountry" value="US"></div>
+        <div class="field"><label>Phone</label><input id="toPhone" value="4234910319"></div>
+      </div></div>
+      <div class="panel"><div class="panel-h">Package (in / oz)</div><div class="panel-b">
+        <div class="g4">
+          <div class="field"><label>L</label><input id="pLen" type="number" value="10"></div>
+          <div class="field"><label>W</label><input id="pWid" type="number" value="8"></div>
+          <div class="field"><label>H</label><input id="pHgt" type="number" value="4"></div>
+          <div class="field"><label>Weight oz</label><input id="pWgt" type="number" value="16"></div>
         </div>
-      </div>
-
-      <button class="btn btn-p btn-block" id="btnRates" onclick="getRates()">Get carrier rates (EasyPost)</button>
-      <p class="meta">Uses EasyPost when EASYPOST_API_KEY is set on the server. Otherwise falls back to demo label.</p>
-
-      <div class="panel" id="ratesPanel" style="display:none;margin-top:16px">
+      </div></div>
+      <button class="btn btn-p btn-block" id="btnRates" onclick="getRates()">Get rates (EasyPost → UPS)</button>
+      <p class="meta">Tries EasyPost first, then UPS Rating API. Buy requires the matching account keys.</p>
+      <div class="panel" id="ratesPanel" style="display:none;margin-top:14px">
         <div class="panel-h">Select a rate</div>
         <div class="panel-b" id="ratesList"></div>
         <div class="panel-b" style="padding-top:0">
-          <button class="btn btn-p btn-block" id="btnBuy" onclick="buyLabel()" disabled>Buy label & get tracking</button>
+          <button class="btn btn-p btn-block" id="btnBuy" onclick="buyLabel()" disabled>Buy label</button>
         </div>
       </div>
     </div>
@@ -192,14 +167,15 @@
           <div class="lti" id="labelTo"><div class="l">TO</div>—</div>
           <div class="lst" id="labelState">—</div>
         </div>
-        <div class="lsts" id="labelStatus">LABEL CREATED · PRE-TRANSIT</div>
+        <div class="lsts" id="labelStatus">PRE-TRANSIT</div>
         <div class="lb"><svg id="mainBarcode"></svg><div class="ltn" id="mainTrack">—</div></div>
       </div>
+      <img id="upsLabelImg" alt="UPS label">
       <div id="officialLabel" style="text-align:center;margin-bottom:12px;display:none">
-        <a id="labelPdfLink" href="#" target="_blank" class="btn btn-s">Open official carrier label (PDF/PNG)</a>
+        <a id="labelPdfLink" href="#" target="_blank" class="btn btn-s">Open carrier label</a>
       </div>
       <div class="actions" style="max-width:4in;margin:0 auto">
-        <button class="btn btn-s" style="flex:1" onclick="window.print()">Print 4×6</button>
+        <button class="btn btn-s" style="flex:1" onclick="window.print()">Print</button>
         <button class="btn btn-p" style="flex:1" onclick="goTrack()">Track</button>
       </div>
       <div class="actions" style="max-width:4in;margin:10px auto 0">
@@ -208,23 +184,20 @@
     </div>
 
     <div id="trackScreen" class="screen">
-      <div class="panel">
-        <div class="panel-b">
-          <div class="th">
-            <div class="ts" id="trackStatus">Label Created</div>
-            <div class="tm" id="trackMeta">Pre-Transit</div>
-            <div class="ttn" id="trackTn">—</div>
-          </div>
-          <div class="timeline" id="timeline"></div>
-          <div class="dg">
-            <div class="k">Source</div><div class="v" id="dSource">—</div>
-            <div class="k">Carrier</div><div class="v" id="dService">—</div>
-            <div class="k">Origin</div><div class="v" id="dOrigin">—</div>
-            <div class="k">Destination</div><div class="v" id="dDest">—</div>
-            <div class="k">Recipient</div><div class="v" id="dRecipient">—</div>
-          </div>
+      <div class="panel"><div class="panel-b">
+        <div class="th">
+          <div class="ts" id="trackStatus">—</div>
+          <div class="tm" id="trackMeta"></div>
+          <div class="ttn" id="trackTn"></div>
         </div>
-      </div>
+        <div class="timeline" id="timeline"></div>
+        <div class="dg">
+          <div class="k">Source</div><div class="v" id="dSource">—</div>
+          <div class="k">Carrier</div><div class="v" id="dService">—</div>
+          <div class="k">Origin</div><div class="v" id="dOrigin">—</div>
+          <div class="k">Destination</div><div class="v" id="dDest">—</div>
+        </div>
+      </div></div>
       <div class="actions">
         <button class="btn btn-s" style="flex:1" onclick="go('label')">Label</button>
         <button class="btn btn-s" style="flex:1" onclick="go('home')">Home</button>
@@ -232,40 +205,29 @@
     </div>
 
     <div id="carScreen" class="screen">
-      <div class="hero" style="padding-top:8px">
-        <h1 style="font-size:22px">Sell Your Car — USA</h1>
-        <p>Submit details for an offer. Nationwide.</p>
-      </div>
+      <div class="hero" style="padding-top:8px"><h1 style="font-size:20px">Sell Your Car — USA</h1></div>
       <div id="carForm">
         <div class="panel"><div class="panel-h">Vehicle</div><div class="panel-b">
-          <div class="g2"><div class="field"><label>Year</label><input id="carYear" type="number" placeholder="2018"></div><div class="field"><label>Make</label><input id="carMake" placeholder="Toyota"></div></div>
-          <div class="g2"><div class="field"><label>Model</label><input id="carModel" placeholder="Camry"></div><div class="field"><label>Mileage</label><input id="carMiles" type="number"></div></div>
-          <div class="field"><label>Condition</label><select id="carCond"><option value="good" selected>Good</option><option value="excellent">Excellent</option><option value="fair">Fair</option><option value="poor">Needs work</option></select></div>
-          <div class="field"><label>ZIP</label><input id="carZip" placeholder="77002"></div>
-          <div class="field"><label>Notes</label><textarea id="carNotes"></textarea></div>
+          <div class="g2"><div class="field"><label>Year</label><input id="carYear" type="number"></div><div class="field"><label>Make</label><input id="carMake"></div></div>
+          <div class="g2"><div class="field"><label>Model</label><input id="carModel"></div><div class="field"><label>Mileage</label><input id="carMiles" type="number"></div></div>
+          <div class="field"><label>ZIP</label><input id="carZip"></div>
         </div></div>
         <div class="panel"><div class="panel-h">Contact</div><div class="panel-b">
           <div class="field"><label>Name</label><input id="carName"></div>
           <div class="field"><label>Phone</label><input id="carPhone"></div>
-          <div class="field"><label>Email</label><input id="carEmail" type="email"></div>
         </div></div>
         <button class="btn btn-p btn-block" onclick="submitCar()">Request offer</button>
       </div>
       <div id="carDone" style="display:none">
-        <div class="success-box"><strong>Request received</strong>Reference: <span id="carRef"></span></div>
-        <button class="btn btn-s btn-block" onclick="resetCar()">Another vehicle</button>
+        <div class="success-box"><strong>Received</strong> Ref <span id="carRef"></span></div>
+        <button class="btn btn-s btn-block" onclick="resetCar()">Another</button>
       </div>
     </div>
   </div>
 
   <script>
-    let currentTN = '';
-    let currentData = null;
-    let shipScope = 'local';
-    let epShipmentId = null;
-    let epRates = [];
-    let selectedRateId = null;
-    let lastLabelUrl = null;
+    let currentTN = '', currentData = null, shipScope = 'local';
+    let rateSource = null, epShipmentId = null, ratesCache = [], selectedRate = null, lastLabelUrl = null;
 
     function val(id) { return (document.getElementById(id)?.value || '').trim(); }
     function go(s) {
@@ -289,76 +251,60 @@
       el.style.display = msg ? 'block' : 'none';
       el.textContent = msg || '';
     }
-
     function collectAddresses() {
       return {
-        from: {
-          name: val('fromName') || 'Shipper',
-          street: val('fromStreet'),
-          city: val('fromCity'),
-          state: val('fromState').toUpperCase(),
-          zip: val('fromZip'),
-          country: (val('fromCountry') || 'US').slice(0,2).toUpperCase()
-        },
-        to: {
-          name: val('toName') || 'Recipient',
-          street: val('toStreet'),
-          city: val('toCity'),
-          state: val('toState').toUpperCase(),
-          zip: val('toZip'),
-          country: (val('toCountry') || 'US').slice(0,2).toUpperCase(),
-          phone: val('toPhone')
-        },
-        parcel: {
-          length: val('pLen') || 10,
-          width: val('pWid') || 8,
-          height: val('pHgt') || 4,
-          weight: val('pWgt') || 16
-        }
+        from: { name: val('fromName')||'Shipper', street: val('fromStreet'), city: val('fromCity'), state: val('fromState').toUpperCase(), zip: val('fromZip'), country: (val('fromCountry')||'US').slice(0,2).toUpperCase() },
+        to: { name: val('toName')||'Recipient', street: val('toStreet'), city: val('toCity'), state: val('toState').toUpperCase(), zip: val('toZip'), country: (val('toCountry')||'US').slice(0,2).toUpperCase(), phone: val('toPhone') },
+        parcel: { length: val('pLen')||10, width: val('pWid')||8, height: val('pHgt')||4, weight: val('pWgt')||16 }
       };
     }
 
     async function getRates() {
       showErr('');
       const btn = document.getElementById('btnRates');
-      btn.disabled = true;
-      btn.textContent = 'Fetching rates…';
+      btn.disabled = true; btn.textContent = 'Fetching rates…';
       const payload = collectAddresses();
       currentData = { ...payload, scope: shipScope };
+      document.getElementById('ratesPanel').style.display = 'none';
 
       try {
-        const res = await fetch('/api/easypost-rates', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            from: payload.from,
-            to: payload.to,
-            parcel: payload.parcel,
-            isInternational: shipScope === 'intl'
-          })
+        // 1) EasyPost
+        let res = await fetch('/api/easypost-rates', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: payload.from, to: payload.to, parcel: payload.parcel, isInternational: shipScope==='intl' })
         });
-        const data = await res.json();
-        if (!res.ok) {
-          if (res.status === 503) {
-            showErr('EasyPost key not set on server. Using demo label instead.');
-            demoLabel();
-            return;
-          }
-          throw new Error(data.error || 'Rate request failed');
-        }
-        epShipmentId = data.shipment_id;
-        epRates = data.rates || [];
-        if (!epRates.length) {
-          showErr('No rates returned. Check addresses and package size.');
+        let data = await res.json();
+        if (res.ok && data.rates?.length) {
+          rateSource = 'easypost';
+          epShipmentId = data.shipment_id;
+          ratesCache = data.rates;
+          renderRates(ratesCache);
           return;
         }
-        renderRates(epRates);
+
+        // 2) UPS
+        res = await fetch('/api/ups-rates', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: payload.from, to: payload.to, parcel: payload.parcel })
+        });
+        data = await res.json();
+        if (res.ok && data.rates?.length) {
+          rateSource = 'ups';
+          epShipmentId = null;
+          ratesCache = data.rates;
+          renderRates(ratesCache);
+          return;
+        }
+
+        if (res.status === 503 && data.error) showErr(data.error + ' — demo label available.');
+        else showErr((data.error || 'No rates') + ' — using demo label.');
+        demoLabel();
       } catch (e) {
-        showErr(e.message + ' — falling back to demo label.');
+        showErr(e.message);
         demoLabel();
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Get carrier rates (EasyPost)';
+        btn.textContent = 'Get rates (EasyPost → UPS)';
       }
     }
 
@@ -367,85 +313,108 @@
       list.innerHTML = rates.map((r, i) => `
         <div class="rate-row">
           <label>
-            <input type="radio" name="rate" value="${r.id}" ${i===0?'checked':''} onchange="selectedRateId='${r.id}';document.getElementById('btnBuy').disabled=false">
-            <span><strong>${r.carrier}</strong> · ${r.service}${r.delivery_days != null ? ' · ~'+r.delivery_days+' day(s)' : ''}</span>
+            <input type="radio" name="rate" value="${r.id}" ${i===0?'checked':''}
+              onchange="pickRate('${r.id}')">
+            <span><strong>${r.carrier}</strong> · ${r.service}${r.delivery_days!=null?' · ~'+r.delivery_days+'d':''}</span>
           </label>
-          <span class="rate-price">$${parseFloat(r.rate).toFixed(2)} ${r.currency||'USD'}</span>
+          <span class="rate-price">$${parseFloat(r.rate).toFixed(2)}</span>
         </div>`).join('');
-      selectedRateId = rates[0].id;
-      document.getElementById('btnBuy').disabled = false;
+      pickRate(rates[0].id);
       document.getElementById('ratesPanel').style.display = 'block';
+    }
+    function pickRate(id) {
+      selectedRate = ratesCache.find(r => r.id === id) || null;
+      document.getElementById('btnBuy').disabled = !selectedRate;
     }
 
     async function buyLabel() {
-      if (!epShipmentId || !selectedRateId) return;
+      if (!selectedRate) return;
       const btn = document.getElementById('btnBuy');
-      btn.disabled = true;
-      btn.textContent = 'Purchasing…';
+      btn.disabled = true; btn.textContent = 'Purchasing…';
       showErr('');
       try {
-        const res = await fetch('/api/easypost-buy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ shipment_id: epShipmentId, rate_id: selectedRateId })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Purchase failed');
-
-        currentTN = data.tracking_code || '';
-        lastLabelUrl = data.label_url || data.label_pdf_url;
-        currentData = currentData || collectAddresses();
-        currentData.tracking = currentTN;
-        currentData.carrier = data.carrier;
-        currentData.service = data.service;
-        currentData.rate = data.rate;
-
-        showBoughtLabel(data);
-        go('label');
+        if (rateSource === 'easypost') {
+          const res = await fetch('/api/easypost-buy', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ shipment_id: epShipmentId, rate_id: selectedRate.id })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Buy failed');
+          applyPurchase(data);
+        } else if (rateSource === 'ups') {
+          const payload = collectAddresses();
+          const res = await fetch('/api/ups-ship', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              from: payload.from, to: payload.to, parcel: payload.parcel,
+              service_code: selectedRate.service_code || '03'
+            })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'UPS ship failed');
+          applyPurchase(data);
+        } else {
+          demoLabel();
+        }
       } catch (e) {
         showErr(e.message);
       } finally {
         btn.disabled = false;
-        btn.textContent = 'Buy label & get tracking';
+        btn.textContent = 'Buy label';
       }
+    }
+
+    function applyPurchase(data) {
+      currentTN = data.tracking_code || '';
+      lastLabelUrl = data.label_url || data.label_pdf_url || data.label_data_url || null;
+      currentData = currentData || collectAddresses();
+      currentData.tracking = currentTN;
+      currentData.carrier = data.carrier || selectedRate?.carrier;
+      showBoughtLabel(data);
+      go('label');
     }
 
     function showBoughtLabel(data) {
       const d = currentData;
-      document.getElementById('labelFrom').innerHTML =
-        `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
-      document.getElementById('labelTo').innerHTML =
-        `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${d.to.city}, ${d.to.state} ${d.to.zip}` +
-        (d.to.phone ? `<br><span style="font-size:10px;color:#555">${d.to.phone}</span>` : '');
+      document.getElementById('labelFrom').innerHTML = `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
+      document.getElementById('labelTo').innerHTML = `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${d.to.city}, ${d.to.state} ${d.to.zip}`;
       document.getElementById('labelState').textContent = d.to.state || '—';
       document.getElementById('labelStatus').textContent =
-        `PURCHASED · ${data.carrier || ''} ${data.service || ''} · $${data.rate || ''} · PRE-TRANSIT`;
+        `PURCHASED · ${data.carrier||''} · $${data.rate||selectedRate?.rate||''} · PRE-TRANSIT`;
       document.getElementById('mainTrack').textContent = currentTN;
       try {
-        JsBarcode('#mainBarcode', currentTN.replace(/[^a-zA-Z0-9]/g,''), {
+        JsBarcode('#mainBarcode', String(currentTN).replace(/[^a-zA-Z0-9]/g,''), {
           format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff'
         });
-      } catch (_) {}
-      if (lastLabelUrl) {
+      } catch(_){}
+      const img = document.getElementById('upsLabelImg');
+      if (data.label_data_url) {
+        img.src = data.label_data_url;
+        img.style.display = 'block';
+      } else img.style.display = 'none';
+      if (lastLabelUrl && !data.label_data_url) {
         document.getElementById('officialLabel').style.display = 'block';
         document.getElementById('labelPdfLink').href = lastLabelUrl;
+      } else if (data.label_data_url) {
+        document.getElementById('officialLabel').style.display = 'block';
+        document.getElementById('labelPdfLink').href = data.label_data_url;
+        document.getElementById('labelPdfLink').textContent = 'Open UPS label image';
+      } else {
+        document.getElementById('officialLabel').style.display = 'none';
       }
     }
 
     function demoLabel() {
       const d = collectAddresses();
-      currentData = { ...d, scope: shipScope, tracking: 'DEMO-' + Date.now().toString(36).toUpperCase() };
+      currentData = { ...d, scope: shipScope, tracking: 'DEMO-'+Date.now().toString(36).toUpperCase() };
       currentTN = currentData.tracking;
-      document.getElementById('labelFrom').innerHTML =
-        `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
-      document.getElementById('labelTo').innerHTML =
-        `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${d.to.city}, ${d.to.state} ${d.to.zip}`;
-      document.getElementById('labelState').textContent = d.to.state || '—';
-      document.getElementById('labelStatus').textContent = 'DEMO LABEL · PRE-TRANSIT (add EASYPOST_API_KEY for live postage)';
+      document.getElementById('labelFrom').innerHTML = `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
+      document.getElementById('labelTo').innerHTML = `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${d.to.city}, ${d.to.state} ${d.to.zip}`;
+      document.getElementById('labelState').textContent = d.to.state||'—';
+      document.getElementById('labelStatus').textContent = 'DEMO · add EASYPOST_API_KEY or UPS_* env vars';
       document.getElementById('mainTrack').textContent = currentTN;
-      JsBarcode('#mainBarcode', currentTN.replace(/[^a-zA-Z0-9]/g,''), {
-        format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff'
-      });
+      JsBarcode('#mainBarcode', currentTN.replace(/[^a-zA-Z0-9]/g,''), { format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff' });
+      document.getElementById('upsLabelImg').style.display = 'none';
       document.getElementById('officialLabel').style.display = 'none';
       go('label');
     }
@@ -457,12 +426,7 @@
       document.getElementById('trackTn').textContent = tn || '—';
       document.getElementById('trackStatus').textContent = 'Loading…';
       document.getElementById('timeline').innerHTML = '';
-
-      if (!tn) {
-        document.getElementById('trackStatus').textContent = 'No tracking number';
-        return;
-      }
-
+      if (!tn) { document.getElementById('trackStatus').textContent = 'No tracking number'; return; }
       try {
         const res = await fetch('/api/track?number=' + encodeURIComponent(tn));
         const data = await res.json();
@@ -471,40 +435,29 @@
         document.getElementById('dSource').textContent = data.source || '—';
         document.getElementById('dService').textContent = data.carrier || '—';
         if (currentData) {
-          document.getElementById('dOrigin').textContent = `${currentData.from?.city || ''}, ${currentData.from?.state || ''}`;
-          document.getElementById('dDest').textContent = `${currentData.to?.city || ''}, ${currentData.to?.state || ''}`;
-          document.getElementById('dRecipient').textContent = currentData.to?.name || '—';
+          document.getElementById('dOrigin').textContent = `${currentData.from?.city||''}, ${currentData.from?.state||''}`;
+          document.getElementById('dDest').textContent = `${currentData.to?.city||''}, ${currentData.to?.state||''}`;
         }
-        const events = data.events || [];
         let html = '<div class="tprog" id="prog"></div>';
-        events.forEach((e, i) => {
-          let st = e.state || '';
-          if (!st) st = i === 0 ? 'current' : (i < 2 ? 'done' : 'pending');
+        (data.events||[]).forEach((e,i) => {
+          const st = e.state || (i===0?'current':i<2?'done':'pending');
           html += `<div class="ti ${st}"><div class="td"></div><div class="tit">${e.title||'Update'}</div>${e.location||e.desc?`<div class="til">${e.location||e.desc}</div>`:''}${e.time?`<div class="titm">${e.time}</div>`:''}</div>`;
         });
         document.getElementById('timeline').innerHTML = html;
         requestAnimationFrame(() => {
           const c = document.querySelector('#timeline .ti.current');
           const p = document.getElementById('prog');
-          if (c && p) p.style.height = (c.offsetTop + 6) + 'px';
+          if (c&&p) p.style.height = (c.offsetTop+6)+'px';
         });
       } catch (e) {
         document.getElementById('trackStatus').textContent = 'Track unavailable';
         document.getElementById('trackMeta').textContent = e.message;
       }
     }
-
-    function quickTrack() {
-      currentTN = val('quickTn');
-      currentData = null;
-      goTrack();
-    }
-
+    function quickTrack() { currentTN = val('quickTn'); currentData = null; goTrack(); }
     function submitCar() {
-      if (!val('carYear')||!val('carMake')||!val('carModel')||!val('carName')||!val('carPhone')) {
-        alert('Fill year, make, model, name, phone.'); return;
-      }
-      document.getElementById('carRef').textContent = 'CAR-' + Date.now().toString(36).toUpperCase();
+      if (!val('carYear')||!val('carMake')||!val('carModel')||!val('carName')||!val('carPhone')) { alert('Fill required fields'); return; }
+      document.getElementById('carRef').textContent = 'CAR-'+Date.now().toString(36).toUpperCase();
       document.getElementById('carForm').style.display = 'none';
       document.getElementById('carDone').style.display = 'block';
     }
