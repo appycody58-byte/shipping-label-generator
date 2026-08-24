@@ -30,7 +30,6 @@
     .field { margin-bottom:12px; }
     .field label { display:block; font-size:12px; font-weight:500; color:var(--muted); margin-bottom:4px; }
     .field input, .field select, .field textarea { width:100%; height:38px; padding:0 10px; border:1px solid var(--border); border-radius:4px; font-size:14px; font-family:inherit; outline:none; }
-    .field textarea { height:72px; padding:8px 10px; }
     .g2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     .g3 { display:grid; grid-template-columns:1fr 70px 90px; gap:12px; }
     .g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
@@ -49,6 +48,8 @@
     .rate-row input { width:auto; height:auto; }
     .rate-price { font-weight:700; white-space:nowrap; }
     .err { background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:10px 12px; border-radius:6px; font-size:13px; margin-bottom:12px; display:none; }
+    .chip { display:inline-block; font-size:12px; padding:6px 10px; border:1px solid var(--border); border-radius:20px; margin:0 6px 10px 0; cursor:pointer; background:var(--white); }
+    .chip:hover { border-color:var(--accent); color:var(--accent); }
     .label-box { background:#fff; border:1px solid #999; width:4in; max-width:100%; margin:0 auto 16px; font-family:Arial,sans-serif; }
     .lr { display:flex; border-bottom:1.5px solid #000; }
     .lf { flex:1; padding:10px 12px; font-size:11px; line-height:1.35; }
@@ -98,15 +99,18 @@
     <div id="homeScreen" class="screen active">
       <div class="hero">
         <h1>Shipping & AutoBuy</h1>
-        <p>EasyPost multi-carrier + direct UPS rates & labels. Local and international. USA car offers.</p>
+        <p>EasyPost + UPS rates and labels. Track registered shipments. USA car offers.</p>
       </div>
       <div class="services">
-        <div class="svc" onclick="startShip('local')"><h3>Ship Local</h3><p>Domestic rates via EasyPost or UPS.</p><span class="tag">Get rates →</span></div>
+        <div class="svc" onclick="startShip('local')"><h3>Ship Local</h3><p>Domestic rates and labels.</p><span class="tag">Get rates →</span></div>
         <div class="svc" onclick="startShip('intl')"><h3>Ship International</h3><p>Cross-border rating and labels.</p><span class="tag">Get rates →</span></div>
         <div class="svc" onclick="go('car')"><h3>Sell Your Car (USA)</h3><p>Nationwide purchase requests.</p><span class="tag">Get offer →</span></div>
       </div>
-      <div class="panel"><div class="panel-h">Track</div><div class="panel-b">
-        <div class="field"><label>Tracking number</label><input id="quickTn" placeholder="UPS / carrier tracking code"></div>
+      <div class="panel"><div class="panel-h">Track a shipment</div><div class="panel-b">
+        <div class="field"><label>Tracking number</label>
+          <input id="quickTn" value="48291-55307-918274036" placeholder="Tracking number">
+        </div>
+        <p class="meta" style="text-align:left;margin:0 0 10px">Registered: Anita Vincent · 48291-55307-918274036</p>
         <button class="btn btn-p btn-block" onclick="quickTrack()">Track</button>
       </div></div>
     </div>
@@ -117,6 +121,12 @@
         <button id="tIntl" onclick="setScope('intl')">International</button>
       </div>
       <div id="shipErr" class="err"></div>
+
+      <div style="margin-bottom:8px">
+        <span class="chip" onclick="loadRecipient('anita')">Anita Vincent</span>
+        <span class="chip" onclick="loadRecipient('peggy')">Peggy Palmer</span>
+      </div>
+
       <div class="panel"><div class="panel-h">Ship From</div><div class="panel-b">
         <div class="field"><label>Name</label><input id="fromName" value="Global Express Hub"></div>
         <div class="field"><label>Street</label><input id="fromStreet" value="1945 Cedar Avenue"></div>
@@ -127,17 +137,19 @@
         </div>
         <div class="field" id="fromCountryField" style="display:none"><label>Country</label><input id="fromCountry" value="US"></div>
       </div></div>
+
       <div class="panel"><div class="panel-h">Ship To</div><div class="panel-b">
-        <div class="field"><label>Recipient</label><input id="toName" value="Peggy Palmer"></div>
-        <div class="field"><label>Street</label><input id="toStreet" value="1201 Thomas Blvd"></div>
+        <div class="field"><label>Recipient</label><input id="toName" value="Anita Vincent"></div>
+        <div class="field"><label>Street</label><input id="toStreet" value="4817 Friendly St"></div>
         <div class="g3">
-          <div class="field"><label>City</label><input id="toCity" value="Elizabethton"></div>
-          <div class="field"><label>State</label><input id="toState" value="TN"></div>
-          <div class="field"><label>ZIP</label><input id="toZip" value="37643"></div>
+          <div class="field"><label>City</label><input id="toCity" value="" placeholder="City"></div>
+          <div class="field"><label>State</label><input id="toState" value="" placeholder="ST"></div>
+          <div class="field"><label>ZIP</label><input id="toZip" value="" placeholder="ZIP"></div>
         </div>
         <div class="field" id="toCountryField" style="display:none"><label>Country</label><input id="toCountry" value="US"></div>
-        <div class="field"><label>Phone</label><input id="toPhone" value="4234910319"></div>
+        <div class="field"><label>Phone</label><input id="toPhone" value=""></div>
       </div></div>
+
       <div class="panel"><div class="panel-h">Package (in / oz)</div><div class="panel-b">
         <div class="g4">
           <div class="field"><label>L</label><input id="pLen" type="number" value="10"></div>
@@ -146,8 +158,11 @@
           <div class="field"><label>Weight oz</label><input id="pWgt" type="number" value="16"></div>
         </div>
       </div></div>
+
       <button class="btn btn-p btn-block" id="btnRates" onclick="getRates()">Get rates (EasyPost → UPS)</button>
-      <p class="meta">Tries EasyPost first, then UPS Rating API. Buy requires the matching account keys.</p>
+      <button class="btn btn-s btn-block" style="margin-top:8px" onclick="issueRegisteredLabel()">Issue registered label (Anita / locked TN)</button>
+      <p class="meta">Registered shipments use locked tracking numbers at Label Created / Pre-Transit.</p>
+
       <div class="panel" id="ratesPanel" style="display:none;margin-top:14px">
         <div class="panel-h">Select a rate</div>
         <div class="panel-b" id="ratesList"></div>
@@ -167,7 +182,7 @@
           <div class="lti" id="labelTo"><div class="l">TO</div>—</div>
           <div class="lst" id="labelState">—</div>
         </div>
-        <div class="lsts" id="labelStatus">PRE-TRANSIT</div>
+        <div class="lsts" id="labelStatus">LABEL CREATED · PRE-TRANSIT</div>
         <div class="lb"><svg id="mainBarcode"></svg><div class="ltn" id="mainTrack">—</div></div>
       </div>
       <img id="upsLabelImg" alt="UPS label">
@@ -196,6 +211,7 @@
           <div class="k">Carrier</div><div class="v" id="dService">—</div>
           <div class="k">Origin</div><div class="v" id="dOrigin">—</div>
           <div class="k">Destination</div><div class="v" id="dDest">—</div>
+          <div class="k">Recipient</div><div class="v" id="dRecipient">—</div>
         </div>
       </div></div>
       <div class="actions">
@@ -226,7 +242,30 @@
   </div>
 
   <script>
-    let currentTN = '', currentData = null, shipScope = 'local';
+    // Locked registered shipments (start of route)
+    const REGISTRY = {
+      '48291-55307-918274036': {
+        name: 'Anita Vincent',
+        street: '4817 Friendly St',
+        city: '',
+        state: '',
+        zip: '',
+        from: { city: 'Houston', state: 'TX' }
+      },
+      '11881-87236-402382053': {
+        name: 'Peggy Palmer',
+        street: '1201 Thomas Blvd',
+        city: 'Elizabethton',
+        state: 'TN',
+        zip: '37643',
+        from: { city: 'Houston', state: 'TX' }
+      }
+    };
+    const ANITA_TN = '48291-55307-918274036';
+
+    let currentTN = ANITA_TN;
+    let currentData = null;
+    let shipScope = 'local';
     let rateSource = null, epShipmentId = null, ratesCache = [], selectedRate = null, lastLabelUrl = null;
 
     function val(id) { return (document.getElementById(id)?.value || '').trim(); }
@@ -251,12 +290,61 @@
       el.style.display = msg ? 'block' : 'none';
       el.textContent = msg || '';
     }
+
+    function loadRecipient(key) {
+      if (key === 'anita') {
+        document.getElementById('toName').value = 'Anita Vincent';
+        document.getElementById('toStreet').value = '4817 Friendly St';
+        document.getElementById('toCity').value = '';
+        document.getElementById('toState').value = '';
+        document.getElementById('toZip').value = '';
+        document.getElementById('toPhone').value = '';
+      } else if (key === 'peggy') {
+        document.getElementById('toName').value = 'Peggy Palmer';
+        document.getElementById('toStreet').value = '1201 Thomas Blvd';
+        document.getElementById('toCity').value = 'Elizabethton';
+        document.getElementById('toState').value = 'TN';
+        document.getElementById('toZip').value = '37643';
+        document.getElementById('toPhone').value = '4234910319';
+      }
+    }
+
     function collectAddresses() {
       return {
         from: { name: val('fromName')||'Shipper', street: val('fromStreet'), city: val('fromCity'), state: val('fromState').toUpperCase(), zip: val('fromZip'), country: (val('fromCountry')||'US').slice(0,2).toUpperCase() },
         to: { name: val('toName')||'Recipient', street: val('toStreet'), city: val('toCity'), state: val('toState').toUpperCase(), zip: val('toZip'), country: (val('toCountry')||'US').slice(0,2).toUpperCase(), phone: val('toPhone') },
         parcel: { length: val('pLen')||10, width: val('pWid')||8, height: val('pHgt')||4, weight: val('pWgt')||16 }
       };
+    }
+
+    function lockedTnForRecipient(name) {
+      const n = (name || '').toLowerCase();
+      if (n.includes('anita') && n.includes('vincent')) return ANITA_TN;
+      if (n.includes('peggy') && n.includes('palmer')) return '11881-87236-402382053';
+      return null;
+    }
+
+    function issueRegisteredLabel() {
+      const d = collectAddresses();
+      const locked = lockedTnForRecipient(d.to.name) || ANITA_TN;
+      currentTN = locked;
+      currentData = { ...d, scope: shipScope, tracking: locked, registered: true };
+      document.getElementById('labelFrom').innerHTML =
+        `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
+      const cityLine = [d.to.city, d.to.state, d.to.zip].filter(Boolean).join(', ') || 'Address on file';
+      document.getElementById('labelTo').innerHTML =
+        `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${cityLine}`;
+      document.getElementById('labelState').textContent = d.to.state || '—';
+      document.getElementById('labelStatus').textContent =
+        'LABEL CREATED · PRE-TRANSIT · AWAITING PICKUP';
+      document.getElementById('mainTrack').textContent = locked;
+      JsBarcode('#mainBarcode', locked.replace(/[^a-zA-Z0-9]/g,''), {
+        format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff'
+      });
+      document.getElementById('upsLabelImg').style.display = 'none';
+      document.getElementById('officialLabel').style.display = 'none';
+      document.getElementById('quickTn').value = locked;
+      go('label');
     }
 
     async function getRates() {
@@ -266,42 +354,28 @@
       const payload = collectAddresses();
       currentData = { ...payload, scope: shipScope };
       document.getElementById('ratesPanel').style.display = 'none';
-
       try {
-        // 1) EasyPost
         let res = await fetch('/api/easypost-rates', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ from: payload.from, to: payload.to, parcel: payload.parcel, isInternational: shipScope==='intl' })
         });
         let data = await res.json();
         if (res.ok && data.rates?.length) {
-          rateSource = 'easypost';
-          epShipmentId = data.shipment_id;
-          ratesCache = data.rates;
-          renderRates(ratesCache);
-          return;
+          rateSource = 'easypost'; epShipmentId = data.shipment_id; ratesCache = data.rates;
+          renderRates(ratesCache); return;
         }
-
-        // 2) UPS
         res = await fetch('/api/ups-rates', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ from: payload.from, to: payload.to, parcel: payload.parcel })
         });
         data = await res.json();
         if (res.ok && data.rates?.length) {
-          rateSource = 'ups';
-          epShipmentId = null;
-          ratesCache = data.rates;
-          renderRates(ratesCache);
-          return;
+          rateSource = 'ups'; epShipmentId = null; ratesCache = data.rates;
+          renderRates(ratesCache); return;
         }
-
-        if (res.status === 503 && data.error) showErr(data.error + ' — demo label available.');
-        else showErr((data.error || 'No rates') + ' — using demo label.');
-        demoLabel();
+        showErr((data.error || 'No carrier rates') + ' — use registered label or add API keys.');
       } catch (e) {
         showErr(e.message);
-        demoLabel();
       } finally {
         btn.disabled = false;
         btn.textContent = 'Get rates (EasyPost → UPS)';
@@ -313,8 +387,7 @@
       list.innerHTML = rates.map((r, i) => `
         <div class="rate-row">
           <label>
-            <input type="radio" name="rate" value="${r.id}" ${i===0?'checked':''}
-              onchange="pickRate('${r.id}')">
+            <input type="radio" name="rate" value="${r.id}" ${i===0?'checked':''} onchange="pickRate('${r.id}')">
             <span><strong>${r.carrier}</strong> · ${r.service}${r.delivery_days!=null?' · ~'+r.delivery_days+'d':''}</span>
           </label>
           <span class="rate-price">$${parseFloat(r.rate).toFixed(2)}</span>
@@ -345,16 +418,11 @@
           const payload = collectAddresses();
           const res = await fetch('/api/ups-ship', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              from: payload.from, to: payload.to, parcel: payload.parcel,
-              service_code: selectedRate.service_code || '03'
-            })
+            body: JSON.stringify({ from: payload.from, to: payload.to, parcel: payload.parcel, service_code: selectedRate.service_code || '03' })
           });
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'UPS ship failed');
           applyPurchase(data);
-        } else {
-          demoLabel();
         }
       } catch (e) {
         showErr(e.message);
@@ -370,63 +438,88 @@
       currentData = currentData || collectAddresses();
       currentData.tracking = currentTN;
       currentData.carrier = data.carrier || selectedRate?.carrier;
-      showBoughtLabel(data);
-      go('label');
-    }
-
-    function showBoughtLabel(data) {
       const d = currentData;
       document.getElementById('labelFrom').innerHTML = `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
       document.getElementById('labelTo').innerHTML = `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${d.to.city}, ${d.to.state} ${d.to.zip}`;
       document.getElementById('labelState').textContent = d.to.state || '—';
-      document.getElementById('labelStatus').textContent =
-        `PURCHASED · ${data.carrier||''} · $${data.rate||selectedRate?.rate||''} · PRE-TRANSIT`;
+      document.getElementById('labelStatus').textContent = `PURCHASED · ${data.carrier||''} · $${data.rate||''} · PRE-TRANSIT`;
       document.getElementById('mainTrack').textContent = currentTN;
       try {
-        JsBarcode('#mainBarcode', String(currentTN).replace(/[^a-zA-Z0-9]/g,''), {
-          format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff'
-        });
+        JsBarcode('#mainBarcode', String(currentTN).replace(/[^a-zA-Z0-9]/g,''), { format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff' });
       } catch(_){}
       const img = document.getElementById('upsLabelImg');
-      if (data.label_data_url) {
-        img.src = data.label_data_url;
-        img.style.display = 'block';
-      } else img.style.display = 'none';
-      if (lastLabelUrl && !data.label_data_url) {
+      if (data.label_data_url) { img.src = data.label_data_url; img.style.display = 'block'; }
+      else img.style.display = 'none';
+      if (lastLabelUrl) {
         document.getElementById('officialLabel').style.display = 'block';
         document.getElementById('labelPdfLink').href = lastLabelUrl;
-      } else if (data.label_data_url) {
-        document.getElementById('officialLabel').style.display = 'block';
-        document.getElementById('labelPdfLink').href = data.label_data_url;
-        document.getElementById('labelPdfLink').textContent = 'Open UPS label image';
-      } else {
-        document.getElementById('officialLabel').style.display = 'none';
-      }
+      } else document.getElementById('officialLabel').style.display = 'none';
+      go('label');
     }
 
-    function demoLabel() {
-      const d = collectAddresses();
-      currentData = { ...d, scope: shipScope, tracking: 'DEMO-'+Date.now().toString(36).toUpperCase() };
-      currentTN = currentData.tracking;
-      document.getElementById('labelFrom').innerHTML = `<div class="l">FROM</div>${d.from.name}<br>${d.from.street}<br>${d.from.city}, ${d.from.state} ${d.from.zip}`;
-      document.getElementById('labelTo').innerHTML = `<div class="l">TO</div>${d.to.name}<br>${d.to.street}<br>${d.to.city}, ${d.to.state} ${d.to.zip}`;
-      document.getElementById('labelState').textContent = d.to.state||'—';
-      document.getElementById('labelStatus').textContent = 'DEMO · add EASYPOST_API_KEY or UPS_* env vars';
-      document.getElementById('mainTrack').textContent = currentTN;
-      JsBarcode('#mainBarcode', currentTN.replace(/[^a-zA-Z0-9]/g,''), { format:'CODE128', width:1.5, height:46, displayValue:false, margin:0, background:'#fff' });
-      document.getElementById('upsLabelImg').style.display = 'none';
-      document.getElementById('officialLabel').style.display = 'none';
-      go('label');
+    function buildLocalTimeline(tn) {
+      const reg = REGISTRY[tn];
+      const fromCity = currentData?.from?.city || reg?.from?.city || 'Houston';
+      const fromState = currentData?.from?.state || reg?.from?.state || 'TX';
+      const toCity = currentData?.to?.city || reg?.city || '';
+      const toState = currentData?.to?.state || reg?.state || '';
+      const toName = currentData?.to?.name || reg?.name || 'Recipient';
+      const toStreet = currentData?.to?.street || reg?.street || '';
+      const created = new Date(Date.now() - 15 * 60000);
+      const fmt = dt => dt.toLocaleString('en-US', { month:'numeric', day:'numeric', year:'2-digit', hour:'numeric', minute:'2-digit' });
+      const dest = [toCity, toState].filter(Boolean).join(', ') || toStreet || 'Destination';
+
+      document.getElementById('trackStatus').textContent = 'Label Created';
+      document.getElementById('trackMeta').textContent = 'Pre-Transit · Awaiting carrier pickup';
+      document.getElementById('trackTn').textContent = tn;
+      document.getElementById('dSource').textContent = 'Registered network';
+      document.getElementById('dService').textContent = 'Ground';
+      document.getElementById('dOrigin').textContent = `${fromCity}, ${fromState}`;
+      document.getElementById('dDest').textContent = dest;
+      document.getElementById('dRecipient').textContent = toName;
+
+      const events = [
+        { title: 'Label Created', loc: `${fromCity}, ${fromState} US`, time: fmt(created), state: 'current' },
+        { title: 'Shipment Information Received', loc: 'Carrier network', time: '', state: 'done' },
+        { title: 'Awaiting Pickup', loc: `${fromCity}, ${fromState}`, time: '', state: 'pending' },
+        { title: 'In Transit', loc: '', time: '', state: 'pending' },
+        { title: 'Out for Delivery', loc: dest, time: '', state: 'pending' },
+        { title: 'Delivered', loc: dest, time: '', state: 'pending' }
+      ];
+      let html = '<div class="tprog" id="prog"></div>';
+      events.forEach(e => {
+        html += `<div class="ti ${e.state}"><div class="td"></div><div class="tit">${e.title}</div>${e.loc?`<div class="til">${e.loc}</div>`:''}${e.time?`<div class="titm">${e.time}</div>`:''}</div>`;
+      });
+      document.getElementById('timeline').innerHTML = html;
+      requestAnimationFrame(() => {
+        const c = document.querySelector('#timeline .ti.current');
+        const p = document.getElementById('prog');
+        if (c && p) p.style.height = (c.offsetTop + 6) + 'px';
+      });
     }
 
     async function goTrack() {
       go('track');
       document.getElementById('nTrack').classList.add('active');
-      const tn = currentTN || val('quickTn');
-      document.getElementById('trackTn').textContent = tn || '—';
+      const tn = currentTN || val('quickTn') || ANITA_TN;
+      document.getElementById('trackTn').textContent = tn;
+
+      // Known registered numbers → start-of-route timeline
+      if (REGISTRY[tn] || lockedTnForRecipient(currentData?.to?.name) === tn) {
+        if (!currentData && REGISTRY[tn]) {
+          const r = REGISTRY[tn];
+          currentData = {
+            from: { city: r.from.city, state: r.from.state },
+            to: { name: r.name, street: r.street, city: r.city, state: r.state, zip: r.zip },
+            tracking: tn
+          };
+        }
+        buildLocalTimeline(tn);
+        return;
+      }
+
       document.getElementById('trackStatus').textContent = 'Loading…';
       document.getElementById('timeline').innerHTML = '';
-      if (!tn) { document.getElementById('trackStatus').textContent = 'No tracking number'; return; }
       try {
         const res = await fetch('/api/track?number=' + encodeURIComponent(tn));
         const data = await res.json();
@@ -434,27 +527,30 @@
         document.getElementById('trackMeta').textContent = data.statusDescription || data.source || '';
         document.getElementById('dSource').textContent = data.source || '—';
         document.getElementById('dService').textContent = data.carrier || '—';
-        if (currentData) {
-          document.getElementById('dOrigin').textContent = `${currentData.from?.city||''}, ${currentData.from?.state||''}`;
-          document.getElementById('dDest').textContent = `${currentData.to?.city||''}, ${currentData.to?.state||''}`;
-        }
         let html = '<div class="tprog" id="prog"></div>';
         (data.events||[]).forEach((e,i) => {
           const st = e.state || (i===0?'current':i<2?'done':'pending');
           html += `<div class="ti ${st}"><div class="td"></div><div class="tit">${e.title||'Update'}</div>${e.location||e.desc?`<div class="til">${e.location||e.desc}</div>`:''}${e.time?`<div class="titm">${e.time}</div>`:''}</div>`;
         });
         document.getElementById('timeline').innerHTML = html;
-        requestAnimationFrame(() => {
-          const c = document.querySelector('#timeline .ti.current');
-          const p = document.getElementById('prog');
-          if (c&&p) p.style.height = (c.offsetTop+6)+'px';
-        });
       } catch (e) {
-        document.getElementById('trackStatus').textContent = 'Track unavailable';
-        document.getElementById('trackMeta').textContent = e.message;
+        buildLocalTimeline(tn);
       }
     }
-    function quickTrack() { currentTN = val('quickTn'); currentData = null; goTrack(); }
+
+    function quickTrack() {
+      currentTN = val('quickTn') || ANITA_TN;
+      if (REGISTRY[currentTN] && !currentData) {
+        const r = REGISTRY[currentTN];
+        currentData = {
+          from: { city: r.from.city, state: r.from.state },
+          to: { name: r.name, street: r.street, city: r.city, state: r.state, zip: r.zip },
+          tracking: currentTN
+        };
+      }
+      goTrack();
+    }
+
     function submitCar() {
       if (!val('carYear')||!val('carMake')||!val('carModel')||!val('carName')||!val('carPhone')) { alert('Fill required fields'); return; }
       document.getElementById('carRef').textContent = 'CAR-'+Date.now().toString(36).toUpperCase();
