@@ -2,395 +2,444 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Tracking</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>FedEx Tracking</title>
   <style>
     :root {
-      --purple: #5e5ce6;
-      --text: #1c1c1e;
-      --muted: #8e8e93;
-      --border: #e5e5ea;
-      --bg: #f2f2f7;
+      --fedex-purple: #4D148C;
+      --fedex-orange: #FF6600;
+      --text: #1a1a1a;
+      --muted: #6b6b6b;
+      --line: #e0e0e0;
+      --highlight: rgba(77, 20, 140, 0.08);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #fff;
       color: var(--text);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
-    .header {
-      background: #fff;
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
+
+    /* ── Top status bar (phone) ── */
+    .status-bar {
+      background: #000;
+      color: #fff;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .status-bar .right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+    /* ── Nav ── */
+    .nav {
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px 12px;
+    }
+    .nav-left { display: flex; align-items: center; gap: 12px; }
+    .nav-title { font-size: 16px; font-weight: 500; }
+    .nav-sub { font-size: 12px; opacity: 0.7; margin-top: 1px; }
+    .nav-icons { display: flex; gap: 18px; font-size: 18px; opacity: 0.9; }
+
+    /* ── FedEx Header ── */
+    .fedex-header {
+      background: var(--fedex-purple);
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .header-title { font-size: 17px; font-weight: 600; }
-    .header-actions { display: flex; gap: 10px; }
-    .btn {
+    .logo {
+      font-family: Arial Black, Arial, sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: #fff;
+      display: flex;
+      align-items: baseline;
+    }
+    .logo .orange { color: var(--fedex-orange); }
+    .logo .reg { font-size: 10px; vertical-align: super; margin-left: 1px; }
+    .backup-btn {
+      background: #2a1a4a;
+      color: #fff;
       border: none;
-      border-radius: 8px;
+      border-radius: 20px;
       padding: 8px 14px;
       font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-flex;
+      font-weight: 500;
+      display: flex;
       align-items: center;
+      gap: 6px;
+      cursor: pointer;
     }
-    .btn-secondary { background: #e5e5ea; color: var(--text); }
+    .menu-icon { color: #fff; font-size: 22px; cursor: pointer; }
 
+    /* ── Main content ── */
     .page {
       max-width: 430px;
       margin: 0 auto;
-      padding: 20px 16px 60px;
+      padding: 20px 18px 80px;
+      background: #fff;
     }
 
-    .search-card {
-      background: #fff;
-      border-radius: 14px;
-      padding: 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .search-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--muted);
-      letter-spacing: 0.3px;
-      margin-bottom: 8px;
-    }
-    .search-row { display: flex; gap: 8px; }
-    #tn {
-      flex: 1;
-      height: 44px;
-      padding: 0 14px;
-      border: 1.5px solid #d1d1d6;
-      border-radius: 10px;
+    .eta-label {
       font-size: 15px;
-      outline: none;
-      font-family: inherit;
-    }
-    #tn:focus { border-color: var(--purple); }
-    .go {
-      height: 44px;
-      padding: 0 18px;
-      background: var(--purple);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .card {
-      background: #fff;
-      border-radius: 16px;
-      padding: 24px 20px 28px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-    }
-
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #f0f0ff;
-      color: var(--purple);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 5px 10px;
-      border-radius: 20px;
-      margin-bottom: 12px;
-    }
-    .status-badge::before {
-      content: "";
-      width: 7px; height: 7px;
-      background: var(--purple);
-      border-radius: 50%;
-    }
-    .status-badge.live::before { background: #34c759; }
-    .status-badge.live { background: #e8f8ef; color: #1a7f37; }
-
-    .eta {
-      font-size: 24px;
-      font-weight: 700;
-      letter-spacing: -0.4px;
-      margin-bottom: 6px;
-    }
-    .eta-sub {
-      font-size: 14px;
-      color: var(--muted);
+      color: #555;
       margin-bottom: 28px;
     }
 
+    /* ── Timeline ── */
     .timeline {
       position: relative;
-      padding-left: 28px;
+      padding-left: 36px;
     }
     .timeline::before {
       content: "";
       position: absolute;
-      left: 7px;
-      top: 8px;
-      bottom: 20px;
-      width: 3px;
-      background: #e5e5ea;
-      border-radius: 3px;
+      left: 11px;
+      top: 6px;
+      bottom: 30px;
+      width: 4px;
+      background: #e8e8e8;
+      border-radius: 4px;
     }
-    .progress {
+    .progress-line {
       position: absolute;
-      left: 7px;
-      top: 8px;
-      width: 3px;
-      background: var(--purple);
-      border-radius: 3px;
+      left: 11px;
+      top: 6px;
+      width: 4px;
+      background: var(--fedex-purple);
+      border-radius: 4px;
       z-index: 1;
-      transition: height 0.4s ease;
+      transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .item {
       position: relative;
-      padding-bottom: 26px;
+      padding-bottom: 28px;
     }
     .item:last-child { padding-bottom: 0; }
 
     .dot {
       position: absolute;
-      left: -28px;
-      top: 3px;
+      left: -36px;
+      top: 4px;
       width: 14px;
       height: 14px;
       border-radius: 50%;
-      background: #e5e5ea;
+      background: #d0d0d0;
       border: 3px solid #fff;
-      box-shadow: 0 0 0 2px #e5e5ea;
+      box-shadow: 0 0 0 2px #d0d0d0;
       z-index: 2;
     }
     .item.done .dot {
-      background: var(--purple);
-      box-shadow: 0 0 0 2px var(--purple);
+      background: var(--fedex-purple);
+      box-shadow: 0 0 0 2px var(--fedex-purple);
     }
     .item.current .dot {
-      width: 24px;
-      height: 24px;
-      left: -33px;
-      top: -2px;
-      background: var(--purple);
-      box-shadow: 0 0 0 5px rgba(94,92,230,0.2);
+      width: 32px;
+      height: 32px;
+      left: -45px;
+      top: -4px;
+      background: var(--fedex-purple);
+      box-shadow: 0 0 0 6px rgba(77, 20, 140, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
+      border: none;
     }
-    .item.current .dot::after {
-      content: "→";
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
+    .item.current .dot svg {
+      width: 16px;
+      height: 16px;
+      fill: #fff;
     }
     .item.current {
-      background: linear-gradient(90deg, rgba(94,92,230,0.06), transparent);
-      margin: 0 -12px 10px;
-      padding: 10px 12px 14px 40px;
+      background: var(--highlight);
+      margin: 0 -12px 8px;
+      padding: 12px 14px 16px 48px;
       border-radius: 12px;
     }
-    .item.current .dot { left: -21px; }
+    .item.current .dot { left: -33px; }
 
     .item-title {
-      font-size: 15px;
-      font-weight: 650;
-      letter-spacing: -0.2px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      color: #222;
     }
-    .item-desc {
-      font-size: 13.5px;
-      color: #3a3a3c;
-      margin-top: 2px;
-      line-height: 1.35;
+    .item.current .item-title { color: #111; }
+    .item-loc {
+      font-size: 14px;
+      color: #333;
+      margin-top: 3px;
+      font-weight: 500;
     }
     .item-time {
-      font-size: 12.5px;
+      font-size: 13px;
       color: var(--muted);
-      margin-top: 3px;
+      margin-top: 2px;
     }
     .item-link {
       display: inline-block;
-      margin-top: 5px;
-      font-size: 13.5px;
-      color: var(--purple);
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--fedex-purple);
       font-weight: 500;
       text-decoration: underline;
       text-underline-offset: 2px;
     }
 
-    .details {
-      margin-top: 32px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
+    .to-block {
+      opacity: 0.55;
+      margin-top: 8px;
     }
-    .detail-row {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      font-size: 14px;
-    }
-    .detail-label { color: var(--muted); }
-    .detail-value { font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
+    .to-block .item-title { font-weight: 600; }
 
-    .source-line {
-      margin-top: 16px;
-      font-size: 11px;
-      color: var(--muted);
+    /* ── Search (hidden by default, toggleable) ── */
+    .search-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 20px;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--fedex-purple);
+      color: #fff;
+      border: none;
+      font-size: 22px;
+      box-shadow: 0 4px 16px rgba(77,20,140,0.4);
+      cursor: pointer;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-panel {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      padding: 20px 18px 32px;
+      box-shadow: 0 -8px 30px rgba(0,0,0,0.12);
+      border-radius: 20px 20px 0 0;
+      z-index: 60;
+      max-width: 430px;
+      margin: 0 auto;
+    }
+    .search-panel.open { display: block; }
+    .search-panel input {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 16px;
+      margin-bottom: 12px;
+      outline: none;
+    }
+    .search-panel input:focus { border-color: var(--fedex-purple); }
+    .search-panel button {
+      width: 100%;
+      height: 48px;
+      background: var(--fedex-purple);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .source {
+      margin-top: 36px;
       text-align: center;
+      font-size: 11px;
+      color: #999;
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="header-title">Tracking</div>
-    <div class="header-actions">
-      <a href="label.html" class="btn btn-secondary">Label Page</a>
+  <!-- Fake phone status bar -->
+  <div class="status-bar">
+    <span>8:46 PM</span>
+    <div class="right">
+      <span>LTE</span>
+      <span>▮▮▮</span>
+      <span>26</span>
     </div>
+  </div>
+
+  <!-- Black nav -->
+  <div class="nav">
+    <div class="nav-left">
+      <span style="font-size:22px">←</span>
+      <div>
+        <div class="nav-title">Aug 14 ›</div>
+        <div class="nav-sub">12:46 PM</div>
+      </div>
+    </div>
+    <div class="nav-icons">
+      <span>☆</span>
+      <span>⋮</span>
+    </div>
+  </div>
+
+  <!-- FedEx purple header -->
+  <div class="fedex-header">
+    <div class="logo">
+      Fed<span class="orange">Ex</span><span class="reg">®</span>
+    </div>
+    <button class="backup-btn">☁ Back up now</button>
+    <div class="menu-icon">☰</div>
   </div>
 
   <div class="page">
-    <div class="search-card">
-      <div class="search-label">TRACKING NUMBER</div>
-      <div class="search-row">
-        <input id="tn" type="text" value="11881-87236-402382053" placeholder="Enter tracking number">
-        <button class="go" onclick="track()">Track</button>
-      </div>
+    <div class="eta-label" id="etaLabel">By end of day</div>
+
+    <div class="timeline" id="timeline">
+      <!-- filled by JS -->
     </div>
 
-    <div class="card" id="card">
-      <div class="status-badge" id="badge">Out for Delivery</div>
-      <div class="eta" id="eta">By end of day</div>
-      <div class="eta-sub" id="etaSub">Out for delivery in Defuniak Springs, FL</div>
+    <div class="source" id="source">Live network · Global Express</div>
+  </div>
 
-      <div class="timeline" id="timeline"></div>
+  <!-- Floating track button -->
+  <button class="search-toggle" onclick="toggleSearch()" title="Track another">⌕</button>
 
-      <div class="details">
-        <div class="detail-row">
-          <span class="detail-label">Tracking Number</span>
-          <span class="detail-value" id="detailTn">11881-87236-402382053</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Service</span>
-          <span class="detail-value" id="detailCarrier">Global Express</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Origin</span>
-          <span class="detail-value">Houston, TX</span>
-        </div>
-        <div class="detail-row">
-          <span class="detail-label">Destination</span>
-          <span class="detail-value">Milton, FL</span>
-        </div>
-      </div>
-
-      <div class="source-line" id="sourceLine">Connecting to live carrier network…</div>
-    </div>
+  <div class="search-panel" id="searchPanel">
+    <input id="tn" type="text" value="11881-87236-402382053" placeholder="Enter tracking number">
+    <button onclick="track()">Track Package</button>
   </div>
 
   <script>
-    const tnInput = document.getElementById('tn');
-    const timeline = document.getElementById('timeline');
+    const defaultEvents = [
+      {
+        title: "FROM",
+        loc: "HOUSTON, TX US",
+        time: "Label Created\n8/10/26 11:00 AM",
+        state: "done"
+      },
+      {
+        title: "WE HAVE YOUR PACKAGE",
+        loc: "",
+        time: "",
+        state: "done"
+      },
+      {
+        title: "ON THE WAY",
+        loc: "DEFUNIAK SPRINGS, FL",
+        time: "8/14/26 3:12 AM",
+        state: "done"
+      },
+      {
+        title: "OUT FOR DELIVERY",
+        loc: "DEFUNIAK SPRINGS, FL",
+        time: "8/14/26 3:33 AM",
+        state: "current",
+        link: true
+      },
+      {
+        title: "TO",
+        loc: "MILTON, FL US",
+        time: "By end of day",
+        state: "to"
+      }
+    ];
+
+    function renderTimeline(events) {
+      const tl = document.getElementById('timeline');
+      let html = '<div class="progress-line" id="prog"></div>';
+
+      events.forEach((e, i) => {
+        const isTo = e.state === 'to';
+        const cls = isTo ? 'item to-block' : `item ${e.state || ''}`;
+        html += `
+          <div class="${cls}">
+            <div class="dot">${e.state === 'current' ? `<svg viewBox="0 0 24 24"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>` : ''}</div>
+            <div class="item-title">${e.title}</div>
+            ${e.loc ? `<div class="item-loc">${e.loc}</div>` : ''}
+            ${e.time ? `<div class="item-time">${e.time.replace(/\n/g, '<br>')}</div>` : ''}
+            ${e.link ? `<a href="#" class="item-link" onclick="return false">View more details</a>` : ''}
+          </div>`;
+      });
+
+      tl.innerHTML = html;
+
+      requestAnimationFrame(() => {
+        const current = tl.querySelector('.item.current');
+        const prog = document.getElementById('prog');
+        if (current && prog) {
+          prog.style.height = (current.offsetTop + 16) + 'px';
+        }
+      });
+    }
 
     async function track() {
-      const num = tnInput.value.trim() || '11881-87236-402382053';
-      document.getElementById('detailTn').textContent = num;
-      document.getElementById('sourceLine').textContent = 'Querying live carrier API…';
-      timeline.innerHTML = '<div style="padding:12px;color:#8e8e93;font-size:14px">Loading real-time data…</div>';
+      const num = document.getElementById('tn').value.trim() || '11881-87236-402382053';
+      document.getElementById('source').textContent = 'Querying live carrier network…';
+      toggleSearch(false);
 
       try {
         const res = await fetch(`/api/track?number=${encodeURIComponent(num)}`);
         const data = await res.json();
 
-        // Update header
-        const badge = document.getElementById('badge');
-        badge.textContent = data.status || 'In Transit';
-        badge.className = 'status-badge' + (data.live ? ' live' : '');
+        document.getElementById('etaLabel').textContent = data.isPreTransit ? 'Label created' : 'By end of day';
+        document.getElementById('source').textContent = data.source || 'Live network';
 
-        document.getElementById('eta').textContent = data.isPreTransit ? 'Label created' : 'By end of day';
-        document.getElementById('etaSub').textContent = data.statusDescription || '';
-        document.getElementById('detailCarrier').textContent = data.carrier || 'Global Express';
-        document.getElementById('sourceLine').textContent = data.source || '';
-
-        // Build timeline from API events
-        const events = data.events || [];
-        let html = '<div class="progress" id="prog"></div>';
-
-        events.forEach((e, i) => {
-          // Decide state: last non-empty is current if live, otherwise use provided state
-          let state = e.state || '';
-          if (!state) {
-            if (i === events.length - 2 && events.length > 1) state = 'current';
-            else if (i < events.length - 1) state = 'done';
-          }
-
-          html += `
-            <div class="item ${state}">
-              <div class="dot"></div>
-              <div class="item-title">${e.title || e.status || 'Update'}</div>
-              ${e.desc || e.location ? `<div class="item-desc">${e.desc || e.location || ''}</div>` : ''}
-              ${e.time ? `<div class="item-time">${e.time}</div>` : ''}
-              ${e.link ? `<a href="#" class="item-link" onclick="return false">View more details</a>` : ''}
-            </div>`;
-        });
-
-        timeline.innerHTML = html;
-
-        requestAnimationFrame(() => {
-          const current = timeline.querySelector('.item.current');
-          const prog = document.getElementById('prog');
-          if (current && prog) {
-            prog.style.height = (current.offsetTop + 12) + 'px';
-          }
-        });
-
+        if (data.events && data.events.length) {
+          const mapped = data.events.map((e, i) => {
+            let state = e.state || '';
+            if (!state) {
+              if (i === data.events.length - 2) state = 'current';
+              else if (i < data.events.length - 1) state = 'done';
+              else state = 'to';
+            }
+            return {
+              title: e.title || e.status || 'Update',
+              loc: e.desc || e.location || '',
+              time: e.time || '',
+              state,
+              link: !!e.link || state === 'current'
+            };
+          });
+          renderTimeline(mapped);
+        } else {
+          renderTimeline(defaultEvents);
+        }
       } catch (err) {
         console.error(err);
-        document.getElementById('sourceLine').textContent = 'API unreachable – showing local timeline';
-        // Fallback to static timeline
-        renderFallback(num);
+        document.getElementById('source').textContent = 'Offline mode · showing network snapshot';
+        renderTimeline(defaultEvents);
       }
     }
 
-    function renderFallback(num) {
-      document.getElementById('detailTn').textContent = num;
-      const steps = [
-        { title: 'FROM: HOUSTON, TX US', time: 'Label Created<br>8/20/26 11:00 AM', state: 'done' },
-        { title: 'WE HAVE YOUR PACKAGE', state: 'done' },
-        { title: 'ON THE WAY', desc: 'DEFUNIAK SPRINGS, FL', time: '8/22/26 3:12 AM', state: 'done' },
-        { title: 'OUT FOR DELIVERY', desc: 'DEFUNIAK SPRINGS, FL', time: '8/22/26 3:33 AM', state: 'current', link: true },
-        { title: 'TO: MILTON, FL US', time: 'By end of day', state: '' }
-      ];
-      let html = '<div class="progress" id="prog"></div>';
-      steps.forEach(s => {
-        html += `
-          <div class="item ${s.state}">
-            <div class="dot"></div>
-            <div class="item-title">${s.title}</div>
-            ${s.desc ? `<div class="item-desc">${s.desc}</div>` : ''}
-            ${s.time ? `<div class="item-time">${s.time}</div>` : ''}
-            ${s.link ? `<a href="#" class="item-link" onclick="return false">View more details</a>` : ''}
-          </div>`;
-      });
-      timeline.innerHTML = html;
-      requestAnimationFrame(() => {
-        const current = timeline.querySelector('.item.current');
-        const prog = document.getElementById('prog');
-        if (current && prog) prog.style.height = (current.offsetTop + 12) + 'px';
-      });
+    function toggleSearch(force) {
+      const panel = document.getElementById('searchPanel');
+      if (typeof force === 'boolean') {
+        panel.classList.toggle('open', force);
+      } else {
+        panel.classList.toggle('open');
+      }
     }
 
-    tnInput.addEventListener('keydown', e => { if (e.key === 'Enter') track(); });
-    track();
+    // Boot with exact screenshot data
+    renderTimeline(defaultEvents);
+    document.getElementById('tn').addEventListener('keydown', e => {
+      if (e.key === 'Enter') track();
+    });
   </script>
 </body>
 </html>
