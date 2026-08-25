@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Optimizer · Global Express</title>
+  <style>
+    :root { --primary:#111; --accent:#4D148C; --border:#e0e0e0; --muted:#666; --bg:#f5f5f5; --white:#fff; --ok:#0d6832; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; background:var(--bg); color:var(--primary); font-size:14px; line-height:1.5; }
+    header { background:var(--white); border-bottom:1px solid var(--border); height:56px; padding:0 20px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+    .brand { font-weight:700; font-size:16px; } .brand span { color:var(--accent); }
+    header a { color:var(--muted); text-decoration:none; font-size:13px; font-weight:500; margin-left:12px; }
+    header a:hover { color:var(--primary); }
+    .wrap { max-width:960px; margin:0 auto; padding:24px 16px 80px; }
+    h1 { font-size:22px; margin-bottom:6px; }
+    .sub { color:var(--muted); margin-bottom:20px; font-size:14px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    @media (max-width:800px) { .grid { grid-template-columns:1fr; } }
+    .panel { background:var(--white); border:1px solid var(--border); border-radius:8px; margin-bottom:14px; }
+    .panel-h { padding:11px 14px; border-bottom:1px solid var(--border); font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; color:var(--muted); }
+    .panel-b { padding:14px; }
+    .field { margin-bottom:10px; }
+    .field label { display:block; font-size:12px; color:var(--muted); margin-bottom:3px; }
+    .field input, .field select { width:100%; height:36px; padding:0 10px; border:1px solid var(--border); border-radius:4px; font-size:13px; font-family:inherit; }
+    .g2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .g3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+    .btn { height:38px; padding:0 14px; border-radius:4px; font-size:13px; font-weight:600; font-family:inherit; cursor:pointer; border:1px solid transparent; }
+    .btn-p { background:var(--accent); color:#fff; }
+    .btn-s { background:var(--white); color:var(--primary); border-color:var(--border); }
+    .btn-block { width:100%; }
+    .btn:disabled { opacity:0.5; cursor:not-allowed; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+    table { width:100%; border-collapse:collapse; font-size:13px; }
+    th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--border); }
+    th { font-size:11px; text-transform:uppercase; color:var(--muted); font-weight:600; }
+    .badge { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:10px; background:#eee; }
+    .badge.v0 { background:#ede7f6; color:#4D148C; }
+    .badge.v1 { background:#e3f2fd; color:#1565c0; }
+    .badge.v2 { background:#e8f5e9; color:#2e7d32; }
+    .badge.v3 { background:#fff3e0; color:#e65100; }
+    .stat { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:14px; }
+    @media (max-width:600px) { .stat { grid-template-columns:1fr 1fr; } }
+    .stat .box { background:var(--white); border:1px solid var(--border); border-radius:8px; padding:12px; text-align:center; }
+    .stat .box .n { font-size:20px; font-weight:700; }
+    .stat .box .l { font-size:11px; color:var(--muted); margin-top:2px; }
+    .algo-note { font-size:12px; color:var(--muted); margin-top:10px; line-height:1.45; }
+    .stop-list { max-height:280px; overflow:auto; }
+    .del { color:#b00; border:none; background:none; cursor:pointer; font-size:12px; }
+    canvas { width:100%; height:320px; background:#fafafa; border:1px solid var(--border); border-radius:6px; display:block; }
+    .meta { font-size:12px; color:var(--muted); margin-top:8px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Global<span>Express</span></div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="index.html#ship">Ship</a>
+      <a href="route.html" style="color:var(--primary)">Routes</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <h1>Route optimizer</h1>
+    <p class="sub">TSP (nearest-neighbor + 2-opt) and CVRP (Clarke–Wright savings + capacity). Great-circle distances. Time windows optional.</p>
+
+    <div class="stat" id="stats">
+      <div class="box"><div class="n" id="sStops">0</div><div class="l">Stops</div></div>
+      <div class="box"><div class="n" id="sVehicles">0</div><div class="l">Vehicles used</div></div>
+      <div class="box"><div class="n" id="sMiles">0</div><div class="l">Total miles</div></div>
+      <div class="box"><div class="n" id="sLoad">0</div><div class="l">Total demand</div></div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <div class="panel">
+          <div class="panel-h">Depot</div>
+          <div class="panel-b">
+            <div class="field"><label>Name</label><input id="depotName" value="Global Express Hub"></div>
+            <div class="g2">
+              <div class="field"><label>Lat</label><input id="depotLat" type="number" step="any" value="29.7604"></div>
+              <div class="field"><label>Lng</label><input id="depotLng" type="number" step="any" value="-95.3698"></div>
+            </div>
+            <div class="g2">
+              <div class="field"><label>Vehicles</label><input id="numVehicles" type="number" min="1" max="20" value="3"></div>
+              <div class="field"><label>Capacity / vehicle</label><input id="capacity" type="number" min="1" value="50"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">Add stop</div>
+          <div class="panel-b">
+            <div class="field"><label>Label</label><input id="stopLabel" placeholder="Anita Vincent"></div>
+            <div class="g2">
+              <div class="field"><label>Lat</label><input id="stopLat" type="number" step="any" placeholder="29.75"></div>
+              <div class="field"><label>Lng</label><input id="stopLng" type="number" step="any" placeholder="-95.36"></div>
+            </div>
+            <div class="g3">
+              <div class="field"><label>Demand</label><input id="stopDemand" type="number" min="1" value="10"></div>
+              <div class="field"><label>Window start (min)</label><input id="stopTwA" type="number" value="0" title="Minutes from day start"></div>
+              <div class="field"><label>Window end (min)</label><input id="stopTwB" type="number" value="480"></div>
+            </div>
+            <button class="btn btn-p btn-block" onclick="addStop()">Add stop</button>
+            <div class="row">
+              <button class="btn btn-s" onclick="loadSample()">Load sample (Houston area)</button>
+              <button class="btn btn-s" onclick="clearStops()">Clear stops</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">Stops</div>
+          <div class="panel-b stop-list">
+            <table>
+              <thead><tr><th>#</th><th>Label</th><th>Dem</th><th>TW</th><th></th></tr></thead>
+              <tbody id="stopTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="panel">
+          <div class="panel-h">Algorithm</div>
+          <div class="panel-b">
+            <div class="field">
+              <label>Mode</label>
+              <select id="mode">
+                <option value="tsp">TSP — single vehicle (NN + 2-opt)</option>
+                <option value="cvrp" selected>CVRP — multi vehicle (Clarke–Wright + capacity)</option>
+                <option value="nn">Nearest neighbor only (baseline)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Service time per stop (minutes)</label>
+              <input id="serviceMin" type="number" value="5" min="0">
+            </div>
+            <div class="field">
+              <label>Avg speed (mph) for time estimates</label>
+              <input id="speedMph" type="number" value="25" min="5">
+            </div>
+            <button class="btn btn-p btn-block" onclick="runOptimize()">Optimize routes</button>
+            <p class="algo-note" id="algoNote">
+              <strong>CVRP:</strong> Clarke–Wright merges high-savings pairs if capacity allows, then 2-opt polishes each route.<br>
+              <strong>TSP:</strong> Nearest neighbor seed, then 2-opt until no improving edge swap.
+            </p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">Map (schematic)</div>
+          <div class="panel-b">
+            <canvas id="map" width="600" height="320"></canvas>
+            <p class="meta">Positions scaled to lat/lng bounding box. Colors = vehicles.</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">Optimized routes</div>
+          <div class="panel-b" id="routeOut">
+            <p class="meta">Add stops and run optimize.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /** @typedef {{ id:number, label:string, lat:number, lng:number, demand:number, twA:number, twB:number }} Stop */
+
+    /** @type {Stop[]} */
+    let stops = [];
+    let nextId = 1;
+    /** @type {{ vehicle:number, order:number[], miles:number, load:number, timeline:string[] }[]} */
+    let routes = [];
+
+    function depot() {
+      return {
+        id: 0,
+        label: document.getElementById('depotName').value || 'Depot',
+        lat: parseFloat(document.getElementById('depotLat').value) || 0,
+        lng: parseFloat(document.getElementById('depotLng').value) || 0,
+        demand: 0, twA: 0, twB: 24 * 60
+      };
+    }
+
+    // Haversine miles
+    function dist(a, b) {
+      const R = 3958.8;
+      const toR = Math.PI / 180;
+      const dLat = (b.lat - a.lat) * toR;
+      const dLng = (b.lng - a.lng) * toR;
+      const x = Math.sin(dLat / 2) ** 2 +
+        Math.cos(a.lat * toR) * Math.cos(b.lat * toR) * Math.sin(dLng / 2) ** 2;
+      return 2 * R * Math.asin(Math.min(1, Math.sqrt(x)));
+    }
+
+    function matrix(nodes) {
+      const n = nodes.length;
+      const m = Array.from({ length: n }, () => Array(n).fill(0));
+      for (let i = 0; i < n; i++)
+        for (let j = i + 1; j < n; j++) {
+          const d = dist(nodes[i], nodes[j]);
+          m[i][j] = m[j][i] = d;
+        }
+      return m;
+    }
+
+    function pathLength(order, m) {
+      let t = 0;
+      for (let i = 0; i < order.length - 1; i++) t += m[order[i]][order[i + 1]];
+      return t;
+    }
+
+    // —— Nearest neighbor TSP (indices into nodes; 0 = depot) ——
+    function nearestNeighbor(m, customerIdx) {
+      const unvisited = new Set(customerIdx);
+      const tour = [0];
+      let cur = 0;
+      while (unvisited.size) {
+        let best = null, bestD = Infinity;
+        for (const j of unvisited) {
+          if (m[cur][j] < bestD) { bestD = m[cur][j]; best = j; }
+        }
+        tour.push(best);
+        unvisited.delete(best);
+        cur = best;
+      }
+      tour.push(0); // return to depot
+      return tour;
+    }
+
+    // —— 2-opt improvement (fixed endpoints at depot) ——
+    function twoOpt(tour, m) {
+      let improved = true;
+      const t = tour.slice();
+      while (improved) {
+        improved = false;
+        for (let i = 1; i < t.length - 2; i++) {
+          for (let k = i + 1; k < t.length - 1; k++) {
+            const a = t[i - 1], b = t[i], c = t[k], d = t[k + 1];
+            const delta = m[a][c] + m[b][d] - m[a][b] - m[c][d];
+            if (delta < -1e-9) {
+              // reverse segment i..k
+              for (let L = i, R = k; L < R; L++, R--) {
+                const tmp = t[L]; t[L] = t[R]; t[R] = tmp;
+              }
+              improved = true;
+            }
+          }
+        }
+      }
+      return t;
+    }
+
+    // —— Clarke–Wright savings CVRP ——
+    function clarkeWright(nodes, m, capacity, maxVehicles) {
+      const n = nodes.length; // 0 depot, 1..n-1 customers
+      const customers = [];
+      for (let i = 1; i < n; i++) customers.push(i);
+
+      // Initial: each customer own route [0, i, 0]
+      /** @type {number[][]} */
+      let rts = customers.map(i => [0, i, 0]);
+
+      // Savings list
+      const savings = [];
+      for (let i = 1; i < n; i++)
+        for (let j = i + 1; j < n; j++) {
+          const s = m[0][i] + m[0][j] - m[i][j];
+          savings.push({ i, j, s });
+        }
+      savings.sort((a, b) => b.s - a.s);
+
+      function findRoute(cust) {
+        return rts.findIndex(r => r.includes(cust));
+      }
+      function loadOf(r) {
+        return r.slice(1, -1).reduce((sum, idx) => sum + nodes[idx].demand, 0);
+      }
+      function isEndpoint(r, cust) {
+        return r[1] === cust || r[r.length - 2] === cust;
+      }
+
+      for (const { i, j } of savings) {
+        const ri = findRoute(i);
+        const rj = findRoute(j);
+        if (ri < 0 || rj < 0 || ri === rj) continue;
+        const a = rts[ri], b = rts[rj];
+        if (!isEndpoint(a, i) || !isEndpoint(b, j)) continue;
+        if (loadOf(a) + loadOf(b) > capacity) continue;
+
+        // Merge so that i and j become adjacent interior connection
+        let left = a.slice();
+        let right = b.slice();
+        // orient left to end with i
+        if (left[1] === i) left = [0, ...left.slice(1, -1).reverse(), 0];
+        // orient right to start with j
+        if (right[right.length - 2] === j) right = [0, ...right.slice(1, -1).reverse(), 0];
+        if (left[left.length - 2] !== i || right[1] !== j) continue;
+
+        const merged = [...left.slice(0, -1), ...right.slice(1)];
+        rts = rts.filter((_, idx) => idx !== ri && idx !== rj);
+        rts.push(merged);
+      }
+
+      // If still more routes than vehicles, merge smallest loads greedily
+      while (rts.length > maxVehicles) {
+        rts.sort((x, y) => loadOf(x) - loadOf(y));
+        const a = rts[0], b = rts[1];
+        if (loadOf(a) + loadOf(b) > capacity) break; // cannot merge further
+        const merged = [...a.slice(0, -1), ...b.slice(1)];
+        rts = [merged, ...rts.slice(2)];
+      }
+
+      // 2-opt each route
+      rts = rts.map(r => twoOpt(r, m));
+      return rts;
+    }
+
+    function timelineFor(routeIdxOrder, nodes, m, serviceMin, speedMph) {
+      const lines = [];
+      let t = 0; // minutes from start
+      let late = 0;
+      for (let k = 0; k < routeIdxOrder.length - 1; k++) {
+        const a = routeIdxOrder[k], b = routeIdxOrder[k + 1];
+        const miles = m[a][b];
+        const drive = (miles / speedMph) * 60;
+        t += drive;
+        if (b !== 0) {
+          const node = nodes[b];
+          if (t < node.twA) t = node.twA; // wait for window
+          if (t > node.twB) late++;
+          lines.push(`${node.label} · arrive ~${Math.round(t)} min · demand ${node.demand}${t > node.twB ? ' · LATE' : ''}`);
+          t += serviceMin;
+        } else {
+          lines.push(`Return depot · ~${Math.round(t)} min`);
+        }
+      }
+      return { lines, late };
+    }
+
+    function renderStops() {
+      const tb = document.getElementById('stopTable');
+      tb.innerHTML = stops.map((s, i) => `
+        <tr>
+          <td>${i + 1}</td>
+          <td>${s.label}<div class="meta">${s.lat.toFixed(4)}, ${s.lng.toFixed(4)}</div></td>
+          <td>${s.demand}</td>
+          <td>${s.twA}–${s.twB}</td>
+          <td><button class="del" onclick="removeStop(${s.id})">Remove</button></td>
+        </tr>`).join('') || '<tr><td colspan="5" class="meta">No stops yet</td></tr>';
+      document.getElementById('sStops').textContent = stops.length;
+      document.getElementById('sLoad').textContent = stops.reduce((a, s) => a + s.demand, 0);
+    }
+
+    function addStop() {
+      const label = document.getElementById('stopLabel').value.trim() || `Stop ${nextId}`;
+      const lat = parseFloat(document.getElementById('stopLat').value);
+      const lng = parseFloat(document.getElementById('stopLng').value);
+      if (Number.isNaN(lat) || Number.isNaN(lng)) { alert('Enter lat and lng'); return; }
+      stops.push({
+        id: nextId++,
+        label,
+        lat, lng,
+        demand: parseInt(document.getElementById('stopDemand').value, 10) || 1,
+        twA: parseInt(document.getElementById('stopTwA').value, 10) || 0,
+        twB: parseInt(document.getElementById('stopTwB').value, 10) || 480
+      });
+      document.getElementById('stopLabel').value = '';
+      renderStops();
+      drawMap([]);
+    }
+
+    function removeStop(id) {
+      stops = stops.filter(s => s.id !== id);
+      renderStops();
+      drawMap(routes);
+    }
+
+    function clearStops() {
+      stops = [];
+      routes = [];
+      renderStops();
+      document.getElementById('routeOut').innerHTML = '<p class="meta">Cleared.</p>';
+      drawMap([]);
+      document.getElementById('sVehicles').textContent = '0';
+      document.getElementById('sMiles').textContent = '0';
+    }
+
+    function loadSample() {
+      // Houston-area sample including Anita-style + Peggy-style destinations (approx coords)
+      const d = depot();
+      document.getElementById('depotLat').value = '29.7604';
+      document.getElementById('depotLng').value = '-95.3698';
+      stops = [
+        { id: nextId++, label: 'Anita Vincent · 4817 Friendly St', lat: 29.8120, lng: -95.4100, demand: 12, twA: 0, twB: 360 },
+        { id: nextId++, label: 'Peggy Palmer · Elizabethton area', lat: 36.3487, lng: -82.2107, demand: 15, twA: 60, twB: 600 },
+        { id: nextId++, label: 'Downtown drop', lat: 29.7505, lng: -95.3625, demand: 8, twA: 0, twB: 240 },
+        { id: nextId++, label: 'Galleria', lat: 29.7390, lng: -95.4620, demand: 10, twA: 30, twB: 300 },
+        { id: nextId++, label: 'Hobby corridor', lat: 29.6450, lng: -95.2770, demand: 14, twA: 0, twB: 420 },
+        { id: nextId++, label: 'The Woodlands', lat: 30.1650, lng: -95.4610, demand: 11, twA: 90, twB: 480 },
+        { id: nextId++, label: 'Sugar Land', lat: 29.6190, lng: -95.6350, demand: 9, twA: 0, twB: 360 },
+        { id: nextId++, label: 'Pasadena', lat: 29.6910, lng: -95.2090, demand: 7, twA: 0, twB: 300 }
+      ];
+      renderStops();
+      drawMap([]);
+    }
+
+    function runOptimize() {
+      if (!stops.length) { alert('Add at least one stop'); return; }
+      const dep = depot();
+      const nodes = [dep, ...stops];
+      const m = matrix(nodes);
+      const mode = document.getElementById('mode').value;
+      const capacity = parseInt(document.getElementById('capacity').value, 10) || 50;
+      const maxV = parseInt(document.getElementById('numVehicles').value, 10) || 3;
+      const serviceMin = parseInt(document.getElementById('serviceMin').value, 10) || 0;
+      const speedMph = parseFloat(document.getElementById('speedMph').value) || 25;
+
+      const customerIdx = stops.map((_, i) => i + 1);
+      let rawRoutes = [];
+
+      if (mode === 'nn') {
+        rawRoutes = [nearestNeighbor(m, customerIdx)];
+      } else if (mode === 'tsp') {
+        let t = nearestNeighbor(m, customerIdx);
+        t = twoOpt(t, m);
+        rawRoutes = [t];
+      } else {
+        // CVRP — if total demand exceeds fleet capacity, warn but still run
+        const totalDem = stops.reduce((a, s) => a + s.demand, 0);
+        if (totalDem > capacity * maxV) {
+          alert(`Total demand ${totalDem} exceeds fleet capacity ${capacity * maxV}. Increase vehicles or capacity.`);
+        }
+        rawRoutes = clarkeWright(nodes, m, capacity, maxV);
+      }
+
+      routes = rawRoutes.map((order, vi) => {
+        const load = order.slice(1, -1).reduce((s, idx) => s + nodes[idx].demand, 0);
+        const miles = pathLength(order, m);
+        const { lines, late } = timelineFor(order, nodes, m, serviceMin, speedMph);
+        return { vehicle: vi + 1, order, miles, load, timeline: lines, late };
+      });
+
+      // Drop empty
+      routes = routes.filter(r => r.order.length > 2);
+
+      const totalMiles = routes.reduce((a, r) => a + r.miles, 0);
+      document.getElementById('sVehicles').textContent = routes.length;
+      document.getElementById('sMiles').textContent = totalMiles.toFixed(1);
+
+      let html = '';
+      routes.forEach((r, i) => {
+        const seq = r.order.map(idx => nodes[idx].label).join(' → ');
+        html += `<div style="margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)">
+          <div><span class="badge v${i % 4}">Vehicle ${r.vehicle}</span>
+            <strong style="margin-left:8px">${r.miles.toFixed(1)} mi</strong>
+            · load ${r.load}/${capacity}
+            ${r.late ? ` · <span style="color:#b00">${r.late} late window(s)</span>` : ''}
+          </div>
+          <div class="meta" style="margin:6px 0">${seq}</div>
+          <ol style="margin-left:18px;font-size:12px;color:#444">${r.timeline.map(t => `<li>${t}</li>`).join('')}</ol>
+        </div>`;
+      });
+      document.getElementById('routeOut').innerHTML = html || '<p class="meta">No routes.</p>';
+      drawMap(routes);
+    }
+
+    function drawMap(rts) {
+      const canvas = document.getElementById('map');
+      const ctx = canvas.getContext('2d');
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const dep = depot();
+      const nodes = [dep, ...stops];
+      if (nodes.length < 1) return;
+
+      let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+      nodes.forEach(n => {
+        minLat = Math.min(minLat, n.lat); maxLat = Math.max(maxLat, n.lat);
+        minLng = Math.min(minLng, n.lng); maxLng = Math.max(maxLng, n.lng);
+      });
+      if (minLat === maxLat) { minLat -= 0.05; maxLat += 0.05; }
+      if (minLng === maxLng) { minLng -= 0.05; maxLng += 0.05; }
+      const pad = 24;
+      const project = (n) => ({
+        x: pad + ((n.lng - minLng) / (maxLng - minLng)) * (W - 2 * pad),
+        y: pad + ((maxLat - n.lat) / (maxLat - minLat)) * (H - 2 * pad)
+      });
+
+      const colors = ['#4D148C', '#1565c0', '#2e7d32', '#e65100', '#6a1b9a', '#00838f'];
+
+      // routes
+      rts.forEach((r, vi) => {
+        ctx.strokeStyle = colors[vi % colors.length];
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        r.order.forEach((idx, k) => {
+          const p = project(nodes[idx]);
+          if (k === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+        });
+        ctx.stroke();
+      });
+
+      // points
+      nodes.forEach((n, i) => {
+        const p = project(n);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, i === 0 ? 7 : 5, 0, Math.PI * 2);
+        ctx.fillStyle = i === 0 ? '#111' : '#4D148C';
+        ctx.fill();
+        ctx.fillStyle = '#333';
+        ctx.font = '10px sans-serif';
+        ctx.fillText(i === 0 ? 'D' : String(i), p.x + 8, p.y + 3);
+      });
+    }
+
+    renderStops();
+    drawMap([]);
+  </script>
+</body>
+</html>
