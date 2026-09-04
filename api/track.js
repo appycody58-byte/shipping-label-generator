@@ -20,7 +20,6 @@ export default async function handler(req, res) {
   if (process.env.EASYPOST_API_KEY) {
     try {
       const auth = Buffer.from(`${process.env.EASYPOST_API_KEY}:`).toString('base64');
-      // Create or retrieve tracker
       const createRes = await fetch('https://api.easypost.com/v2/trackers', {
         method: 'POST',
         headers: {
@@ -33,7 +32,6 @@ export default async function handler(req, res) {
       if (createRes.ok) {
         tracker = await createRes.json();
       } else {
-        // May already exist — list by tracking code
         const listRes = await fetch(
           `https://api.easypost.com/v2/trackers?tracking_code=${encodeURIComponent(clean)}`,
           { headers: { Authorization: `Basic ${auth}` } }
@@ -160,33 +158,33 @@ export default async function handler(req, res) {
     }
   }
 
-  // 4. Fallback — start of route (Label Created)
+  // 4. Fallback — Label Created TODAY (start of route)
   if (!result) {
     const now = new Date();
-    const created = new Date(now - 12 * 60000);
     const fmt = (d) => d.toLocaleString('en-US', {
       month: 'numeric', day: 'numeric', year: '2-digit',
       hour: 'numeric', minute: '2-digit'
     });
+    const todayOnly = now.toLocaleDateString('en-US');
     result = {
       trackingNumber,
       carrier: 'Global Express',
       status: 'Label Created',
-      statusDescription: 'Pre-Transit · Awaiting carrier pickup',
+      statusDescription: `Pre-Transit · Awaiting carrier pickup · ${todayOnly}`,
       isPreTransit: true,
       events: [
         {
           title: 'Label Created',
           desc: 'Houston, TX US',
           location: 'Houston, TX',
-          time: fmt(created),
+          time: fmt(now),
           state: 'current'
         },
         {
           title: 'Shipment Information Received',
           desc: 'Carrier network',
           location: '',
-          time: '',
+          time: fmt(now),
           state: 'done'
         },
         {
@@ -219,7 +217,8 @@ export default async function handler(req, res) {
         }
       ],
       source: 'Simulator (add EASYPOST_API_KEY for live tracking)',
-      live: false
+      live: false,
+      asOf: todayOnly
     };
   }
 
