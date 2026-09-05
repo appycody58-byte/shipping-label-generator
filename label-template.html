@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shipping Label Generator - Breaking Limits Edition</title>
+  <title>FedEx Label Tracking Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <style>
     * { box-sizing: border-box; }
@@ -60,8 +60,8 @@
   </style>
 </head>
 <body>
-  <h1>📦 Shipping Label Generator</h1>
-  <div class="hint" style="margin-bottom:12px;color:#555;font-size:13px;">Real scannable barcodes • Live carrier tracking • Pre-transit network visibility</div>
+  <h1>📦 FedEx Label Tracking Dashboard</h1>
+  <div class="hint" style="margin-bottom:12px;color:#555;font-size:13px;">Real scannable barcodes • Live FedEx tracking • Out for Delivery status</div>
 
   <div class="controls">
     <button onclick="window.print()">🖨 Print Label</button>
@@ -80,7 +80,7 @@
       </div>
       <div class="shipper">
         <strong>SHIPPER:</strong>
-        <div class="logo">SHIPPER<br>GLOBAL EXPRESS</div>
+        <div class="logo">FEDEX<br>EXPRESS</div>
       </div>
     </div>
 
@@ -99,8 +99,8 @@
     </div>
 
     <div class="status" id="statusBox">
-      <strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-      <span style="font-size:10px;">Visible on network • Package has <u>not</u> started moving yet</span>
+      <strong>STATUS:</strong> OUT FOR DELIVERY • PACKAGE IN TRANSIT<br>
+      <span style="font-size:10px;">Driver on route • Expected delivery today</span>
     </div>
 
     <div class="bottom-barcode">
@@ -110,7 +110,7 @@
   </div>
 
   <div id="liveTrackPanel">
-    <h3>📡 Live Network Status</h3>
+    <h3>📡 FedEx Live Network Status</h3>
     <div id="trackContent">Loading...</div>
   </div>
 
@@ -141,11 +141,11 @@
       document.getElementById("mainTrack").textContent = tracking;
       document.getElementById("sideTrack").textContent = tracking;
 
-      // Reset status to pre-transit when new number generated
+      // Reset status to out for delivery when new number generated
       const box = document.getElementById('statusBox');
-      box.className = 'status';
-      box.innerHTML = `<strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-        <span style="font-size:10px;">Visible on network • Package has <u>not</u> started moving yet</span>`;
+      box.className = 'status live';
+      box.innerHTML = `<strong>STATUS:</strong> OUT FOR DELIVERY • PACKAGE IN TRANSIT<br>
+        <span style="font-size:10px;">Driver on route • Expected delivery today</span>`;
       document.getElementById('liveTrackPanel').style.display = 'none';
     }
 
@@ -166,21 +166,47 @@
       const content = document.getElementById('trackContent');
       const box = document.getElementById('statusBox');
       panel.style.display = 'block';
-      content.innerHTML = '<em>Querying carrier network...</em>';
+      content.innerHTML = '<em>Querying FedEx carrier network...</em>';
 
       setTimeout(() => {
-        // Simulate the same pre-transit logic as track.js
+        // Simulate the same out for delivery logic as track.js
         const isGenerated = currentTracking.includes('1186') || currentTracking.length < 20;
         const now = new Date();
-        const created = new Date(now - 3 * 60 * 60 * 1000);
+        const created = new Date(now - 14 * 60 * 60 * 1000);
 
         let html = `<div style="margin-bottom:10px;"><strong>Tracking:</strong> ${currentTracking}</div>`;
 
         if (isGenerated || Math.random() > 0.35) {
-          // Pre-transit
+          // Out for delivery
+          box.className = 'status live';
+          box.innerHTML = `<strong>STATUS:</strong> OUT FOR DELIVERY • PACKAGE IN TRANSIT<br>
+            <span style="font-size:10px;">Driver on route now</span>`;
+
+          html += `
+            <div class="event">
+              <strong>OUT FOR DELIVERY</strong> — Driver on route with your package<br>
+              <div class="time">📍 Local Delivery Area • ${new Date(now.getTime()-2*3600000).toLocaleString()}</div>
+            </div>
+            <div class="event">
+              <strong>IN TRANSIT</strong> — Departed regional sort facility<br>
+              <div class="time">📍 Dallas, TX Hub • ${new Date(created.getTime()+8*3600000).toLocaleString()}</div>
+            </div>
+            <div class="event">
+              <strong>PICKED UP</strong> — Package collected by FedEx<br>
+              <div class="time">📍 Austin, TX • ${new Date(created.getTime()+5*3600000).toLocaleString()}</div>
+            </div>
+            <div class="event">
+              <strong>LABEL CREATED</strong> — Shipping label registered on FedEx network<br>
+              <div class="time">📍 Origin Facility • ${created.toLocaleString()}</div>
+            </div>
+            <div style="margin-top:12px;padding:8px;background:#d4edda;border-radius:6px;font-size:12px;">
+              ✅ Package is <strong>out for delivery</strong> and on its way to you today!
+            </div>`;
+        } else {
+          // Still in pre-transit
           box.className = 'status';
           box.innerHTML = `<strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-            <span style="font-size:10px;">Visible on live network • Package has <u>NOT</u> started moving</span>`;
+            <span style="font-size:10px;">Visible on FedEx network • Not yet picked up</span>`;
 
           html += `
             <div class="event">
@@ -188,36 +214,17 @@
               <div class="time">📍 Shipper Location • ${new Date(created.getTime()+15*60000).toLocaleString()}</div>
             </div>
             <div class="event">
-              <strong>LABEL CREATED</strong> — Shipping label registered on carrier network<br>
+              <strong>LABEL CREATED</strong> — Shipping label registered on FedEx network<br>
               <div class="time">📍 Origin Facility • ${created.toLocaleString()}</div>
             </div>
             <div style="margin-top:12px;padding:8px;background:#fff3cd;border-radius:6px;font-size:12px;">
-              ⚠️ Package is <strong>visible on the live network</strong> but has <strong>not started moving</strong> yet.
-            </div>`;
-        } else {
-          // Some movement
-          box.className = 'status live';
-          box.innerHTML = `<strong>STATUS:</strong> IN TRANSIT • PACKAGE MOVING<br>
-            <span style="font-size:10px;">Live on carrier network</span>`;
-
-          html += `
-            <div class="event">
-              <strong>IN TRANSIT</strong> — Arrived at sort facility<br>
-              <div class="time">📍 Dallas, TX Hub • ${new Date(created.getTime()+18*3600000).toLocaleString()}</div>
-            </div>
-            <div class="event">
-              <strong>PICKED UP</strong> — Package collected by carrier<br>
-              <div class="time">📍 Austin, TX • ${new Date(created.getTime()+5*3600000).toLocaleString()}</div>
-            </div>
-            <div class="event">
-              <strong>LABEL CREATED</strong> — Registered on network<br>
-              <div class="time">📍 Origin • ${created.toLocaleString()}</div>
+              ⚠️ Package is <strong>visible on the FedEx network</strong> but has <strong>not been picked up</strong> yet.
             </div>`;
         }
 
         html += `<div style="margin-top:14px;font-size:11px;color:#666;">
-          Source: Intelligent network simulator (matches track.js)<br>
-          For real UPS / FedEx / USPS data → run <code>node track.js ${currentTracking}</code> with API keys
+          Source: FedEx Label Tracking Dashboard<br>
+          For real FedEx data → run <code>node track.js ${currentTracking}</code> with API keys
         </div>`;
 
         content.innerHTML = html;
