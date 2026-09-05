@@ -77,7 +77,7 @@ Without keys the system still returns realistic **OUT FOR DELIVERY** data so the
 - 2026-09-05 14:52 CDT — Awaiting Pickup — Houston, TX
 - 2026-09-05 14:55 CDT — In Transit
 - **2026-09-05 14:56 CDT — Out for Delivery — 4817 Friendly St — close to being delivered** 🚚
-- Estimated delivery: Today by 18:30 CDT — 4817 Friendly St
+- Estimated delivery: Today at 12:00 AM (midnight) CDT — 4817 Friendly St
 
 FedEx contact: [Customer Support](https://www.fedex.com/en-us/customer-support/contact-us.html)
 
