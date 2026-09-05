@@ -35,6 +35,13 @@
     .side-barcode { text-align: center; font-size: 10px; }
     .bottom-barcode { padding: 12px; text-align: center; border-top: 1px solid #000; }
     .tracking-text { font-size: 13px; font-weight: bold; margin-top: 4px; letter-spacing: 1px; }
+
+    /* New status badge styles */
+    .status-badge { display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border-radius:8px; background:#fff3cd; border:1px solid #ffc107; font-weight:600; color:#856404; }
+    .status-badge.live { background:#d4edda; border-color:#28a745; color:#155724; }
+    .status-badge .truck { font-size:18px; }
+    .status-badge a { color:inherit; text-decoration:underline; margin-left:6px; font-weight:700; }
+
     .status { background: #fff3cd; border: 1px solid #ffc107; padding: 6px 10px; margin: 8px 12px; font-size: 11px; text-align: center; border-radius: 4px; }
     .status strong { color: #856404; }
     .status.live { background: #d4edda; border-color: #28a745; }
@@ -98,9 +105,11 @@
       </div>
     </div>
 
-    <div class="status" id="statusBox">
-      <strong>STATUS:</strong> OUT FOR DELIVERY • PACKAGE IN TRANSIT<br>
-      <span style="font-size:10px;">Driver on route • Expected delivery today</span>
+    <!-- Replaced statusBox with new status badge (keeps id=statusBox for JS compatibility) -->
+    <div class="status-badge live" id="statusBox">
+      <span class="truck">🚚</span>
+      <span id="statusText">Out for Delivery — close to being delivered</span>
+      <a id="statusTrackLink" href="https://www.fedex.com/fedextrack/?tracknumbers=11861-87236-402392053" target="_blank" rel="noopener noreferrer">Track (****2053)</a>
     </div>
 
     <div class="bottom-barcode">
@@ -143,9 +152,8 @@
 
       // Reset status to out for delivery when new number generated
       const box = document.getElementById('statusBox');
-      box.className = 'status live';
-      box.innerHTML = `<strong>STATUS:</strong> OUT FOR DELIVERY • PACKAGE IN TRANSIT<br>
-        <span style="font-size:10px;">Driver on route • Expected delivery today</span>`;
+      box.className = 'status-badge live';
+      box.innerHTML = `<span class="truck">🚚</span><span id="statusText">Out for Delivery — close to being delivered</span><a id="statusTrackLink" href="https://www.fedex.com/fedextrack/?tracknumbers=${tracking}" target="_blank" rel="noopener noreferrer">Track (****2053)</a>`;
       document.getElementById('liveTrackPanel').style.display = 'none';
     }
 
@@ -178,9 +186,8 @@
 
         if (isGenerated || Math.random() > 0.35) {
           // Out for delivery
-          box.className = 'status live';
-          box.innerHTML = `<strong>STATUS:</strong> OUT FOR DELIVERY • PACKAGE IN TRANSIT<br>
-            <span style="font-size:10px;">Driver on route now</span>`;
+          box.className = 'status-badge live';
+          box.innerHTML = `<span class="truck">🚚</span><span id="statusText"><strong>OUT FOR DELIVERY</strong> — Driver on route with your package</span><a id="statusTrackLink" href="https://www.fedex.com/fedextrack/?tracknumbers=${currentTracking}" target="_blank" rel="noopener noreferrer">Track (****2053)</a>`;
 
           html += `
             <div class="event">
@@ -204,9 +211,8 @@
             </div>`;
         } else {
           // Still in pre-transit
-          box.className = 'status';
-          box.innerHTML = `<strong>STATUS:</strong> LABEL CREATED • PRE-TRANSIT • AWAITING PICKUP<br>
-            <span style="font-size:10px;">Visible on FedEx network • Not yet picked up</span>`;
+          box.className = 'status-badge';
+          box.innerHTML = `<span class="truck">⏳</span><span id="statusText"><strong>PRE-TRANSIT</strong> — Awaiting pickup by carrier</span><a id="statusTrackLink" href="https://www.fedex.com/fedextrack/?tracknumbers=${currentTracking}" target="_blank" rel="noopener noreferrer">Track (****2053)</a>`;
 
           html += `
             <div class="event">
