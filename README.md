@@ -71,10 +71,10 @@ Without keys the system still returns realistic **OUT FOR DELIVERY** data so the
 
 ## Recent Tracking
 
-- Tracking number: `11861-87236-402392053`
-- Recently (2026-09-05) — Label Created — Houston, TX, US — Tracking: `11861-87236-402392053`
-- Recently (2026-09-05) — Shipment Information Received — Carrier network — Tracking: `11861-87236-402392053`
-- Recently (2026-09-05) — Awaiting Pickup — Houston, TX — Tracking: `11861-87236-402392053`
-- Recently (2026-09-05) — In Transit — Tracking: `11861-87236-402392053`
-- Recently (2026-09-05) — Out for Delivery — 4817 Friendly St — close to being delivered — Tracking: `11861-87236-402392053`
-- Expected: Delivered soon — 4817 Friendly St
+- Tracking number: `11861-87236-402392053` (FedEx) — [View on FedEx](https://www.fedex.com/fedextrack/?tracknumbers=11861-87236-402392053)
+- 2026-09-05 19:50 UTC — Label Created — Houston, TX, US
+- 2026-09-05 19:50 UTC — Shipment Information Received — Carrier network
+- 2026-09-05 19:52 UTC — Awaiting Pickup — Houston, TX
+- 2026-09-05 19:55 UTC — In Transit
+- **2026-09-05 19:56 UTC — Out for Delivery — 4817 Friendly St — close to being delivered** 🚚
+- Estimated delivery: Today — 4817 Friendly St
